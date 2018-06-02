@@ -1,0 +1,14 @@
+#
+# base directory for model building
+#
+ROOT_DIR: /Users/jim/Desktop/Kaggle/model-stacking-framework
+
+#
+# variablses that serve as identifiers
+#
+ID_VAR: ['ID']
+
+#
+# response variable
+#
+TARGET_VAR: ['target']
