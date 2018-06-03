@@ -3,6 +3,7 @@ import yaml
 import pandas as pd
 import os
 import os.path
+import shutil
 
 
 class FeatureGenerator():
@@ -22,6 +23,15 @@ class FeatureGenerator():
         self.out_dir = out_dir      # location to save generated feature set
         self.id_vars = id_vars      # list of identifier attributes
         self.target_var = target_var #  name of target variable
+        
+        #create directory to hold feature set
+        # clean out out_dir
+        try:
+            shutil.rmtree(os.path.join(self.root_dir,'data',self.out_dir))
+        except:
+            pass
+        
+        os.makedirs(os.path.join(self.root_dir,'data',self.out_dir))
     
     
     def getRawData(self):
@@ -46,9 +56,29 @@ class FeatureGenerator():
         self.raw_test_features_df = df.loc[:,predictors]
         
     
-    def saveFeatureSet(self,new_features_df):
+    def saveFeatureSet(self,new_train_features_df=None,new_test_features_df=None):
         #
         # default behaviour - can be overriddent for different new feature storage
         #
-        pass
+        # append id_vars and target_var save new_train_features_df and 
+        # new_test_features_df in self.out_dir
+        #
+        # append id-vars and target to new feature set and save as csv
+        
+        try:
+            self.raw_id_df.join(self.raw_target_df)\
+                .join(new_train_features_df)\
+                .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
+        except:
+            pass
+        
+        
+        try:
+            self.raw_id_df.join(self.raw_target_df)\
+                .join(new_test_features_df)\
+                .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'test.csv'),index=False)
+        except:
+            pass
+        
+        
 
