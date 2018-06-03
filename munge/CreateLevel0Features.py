@@ -76,20 +76,29 @@ numeric_predictors = [x for x in new_train.columns if new_train[x].dtype != 'O']
 
 new_train = new_train.loc[:,numeric_predictors]
 
+# impute mean value for missing values
 imp = Imputer()
 new_train = imp.fit_transform(new_train)
 
 mms = MinMaxScaler()
+
+# min/max scale data and convert to data frame, ensure index values match
+# original data frame
 new_train = pd.DataFrame(mms.fit_transform(new_train),index=fs.raw_train_id_df.index)
 
 print(new_train.shape)
 
 new_test = fs.raw_test_features_df.loc[:,numeric_predictors]
+
+# impute missinvg values
 new_test = imp.transform(new_test)
+
+# Apply min/max transform and 
+# convert to data frame,  ensure index values match original data frame
 new_test = pd.DataFrame(mms.transform(new_test),index=fs.raw_test_id_df.index)
 
-print(new_test.shape)
 
+# save new feature set
 fs.saveFeatureSet(new_train, new_test)
 
 #%%
