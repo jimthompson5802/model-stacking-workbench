@@ -11,4 +11,4 @@ ID_VAR: ['ID']
 #
 # response variable
 #
-TARGET_VAR: ['target']
+TARGET_VAR: 'target'
