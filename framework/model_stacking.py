@@ -124,6 +124,19 @@ class ModelTrainer():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
+    def cleanPriorResults(self):
+        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                               self.model_id,
+                               self.model_id+'_features.csv'))
+
+        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                               self.model_id,
+                               self.model_id+'_model.pkl'))
+         
+        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                               self.model_id,
+                               self.model_id+'_submission.csv'))
+            
     def createFeaturesForNextLevel(self):
         #
         # retrieve KFold specifiction

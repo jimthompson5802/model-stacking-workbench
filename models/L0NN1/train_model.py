@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #%%
 from framework.model_stacking import ModelTrainer
-from sklearn.ensemble import RandomForestClassifier as ThisModel
+from sklearn.neural_network import MLPClassifier as ThisModel
 import yaml
 import pickle
 import os.path
@@ -16,9 +16,9 @@ import pickle
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(n_estimators=20,n_jobs=-1), #hyper-parameters
-        model_id='L0RF1',   # Model Identifier
-        feature_set='L0FS02'  # feature set to use
+        model_params=dict(hidden_layer_sizes=(100,)), #hyper-parameters
+        model_id='L0NN1',   # Model Identifier
+        feature_set='L0FS03'  # feature set to use
         )
 
 
