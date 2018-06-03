@@ -113,6 +113,14 @@ class ModelTrainer():
         self.train_ds = train_ds
         self.test_ds = test_ds
         
+        #
+        # get parameters 
+        #
+        with open('./config.yml') as f:
+            CONFIG = yaml.load(f.read())
+            
+        self.root_dir = CONFIG['ROOT_DIR']
+        print("ModelTrainer: ",self.root_dir)
         
     
     def createFeaturesForNextLevel(self):
