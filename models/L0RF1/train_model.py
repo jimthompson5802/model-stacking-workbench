@@ -8,6 +8,7 @@ import os.path
 import pandas as pd
 import numpy as np
 import functools
+import pickle
 #%%
 #
 # get parameters 
@@ -18,7 +19,7 @@ with open('./config.yml') as f:
 print('root dir: ',CONFIG['ROOT_DIR'])
 
 train_ds = 'train.csv'
-test_df = 'test.csv'
+test_ds = 'test.csv'
 feature_set = 'L0FS02'
 model_id = 'L0RF1'
 model_params = dict(n_estimators=20,n_jobs=-1)
@@ -39,7 +40,7 @@ with open(os.path.join(CONFIG['ROOT_DIR'],'data/fold_specification.pkl'),'rb') a
 # retrieve training data
 train_df = pd.read_csv(os.path.join(CONFIG['ROOT_DIR'],'data',feature_set,train_ds))
 
-predictors = sorted(list(set(train_df) - set(CONFIG['ID_VAR']) - set([CONFIG['TARGET_VAR']])))
+predictors = sorted(list(set(train_df.columns) - set(CONFIG['ID_VAR']) - set([CONFIG['TARGET_VAR']])))
 
 
 #
@@ -84,6 +85,43 @@ for fold in k_folds:
 pd.concat(next_level).sort_values(CONFIG['ID_VAR'])\
     .to_csv(os.path.join(CONFIG['ROOT_DIR'],'models',model_id,model_id+'_features.csv'),
             index=False)
+
+
+
+#%%
+#
+# train model on complete training data set
+#
+# retrieve training data
+train_df = pd.read_csv(os.path.join(CONFIG['ROOT_DIR'],'data',feature_set,train_ds))
+predictors = sorted(list(set(train_df.columns) - set(CONFIG['ID_VAR']) - set([CONFIG['TARGET_VAR']])))
+
+
+X_train = train_df[predictors]
+y_train = train_df[CONFIG['TARGET_VAR']]
+    
+model = MODEL(**model_params)
+    
+model.fit(X_train,y_train)
+
+with open(os.path.join(CONFIG['ROOT_DIR'],'models',model_id,model_id+'_model.pkl'),'wb') as f:
+    pickle.dump(model,f)
+    
+    
+#%%
+#
+# create Kaggle Submission
+#
+with open(os.path.join(CONFIG['ROOT_DIR'],'models',model_id,model_id+'_model.pkl'),'rb') as f:
+    model = pickle.load(f)
+    
+# create data set to make predictions
+test_df = pd.read_csv(os.path.join(CONFIG['ROOT_DIR'],'data',feature_set,test_ds))
+predictors = sorted(list(set(test_df.columns) - set(CONFIG['ID_VAR']) - set([CONFIG['TARGET_VAR']])))
+
+test_id = test_df[CONFIG['ID_VAR']]
+
+predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
 
 
 
