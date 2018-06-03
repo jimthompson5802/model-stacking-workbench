@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #%%
 from framework.model_stacking import ModelTrainer
-from sklearn.ensemble import RandomForestClassifier as MODEL
+from sklearn.ensemble import RandomForestClassifier
 import yaml
 import pickle
 import os.path
@@ -9,6 +9,23 @@ import pandas as pd
 import numpy as np
 import functools
 import pickle
+
+#%%
+
+this_model = ModelTrainer(
+        ModelClass=RandomForestClassifier,
+        model_params=dict(n_estimators=20,n_jobs=-1),
+        model_id='L0RF1',
+        feature_set='L0FS02'
+        )
+
+
+
+#%%
+this_model.createFeaturesForNextLevel()
+
+
+###############################################################################
 #%%
 #
 # get parameters 

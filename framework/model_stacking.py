@@ -1,11 +1,16 @@
-#%%
+
 import yaml
 import pandas as pd
 import os
 import os.path
 import shutil
+import pickle
 
-
+###
+#
+# Class for generating feature sets
+#
+###
 class FeatureGenerator():
     
     raw_id_df = None        # pandas data frame to hold id variables
@@ -95,11 +100,15 @@ class FeatureGenerator():
         except:
             pass
         
-     
+###
+#
+#  Class for training models
+#
+###  
 class ModelTrainer():
     
     def __init__(self,
-                 Model=None,
+                 ModelClass=None,
                  model_params=None,
                  model_id=None,
                  feature_set=None,
@@ -117,14 +126,68 @@ class ModelTrainer():
         # get parameters 
         #
         with open('./config.yml') as f:
-            CONFIG = yaml.load(f.read())
+            self.CONFIG = yaml.load(f.read())
             
-        self.root_dir = CONFIG['ROOT_DIR']
-        print("ModelTrainer: ",self.root_dir)
-        
-    
     def createFeaturesForNextLevel(self):
-        pass
+        #
+        # retrieve KFold specifiction
+        #
+        with open(os.path.join(self.CONFIG['ROOT_DIR'],'data','fold_specification.pkl'),'rb') as f:
+            k_folds = pickle.load(f)
+            
+         
+        #
+        # generate features for next level
+        #
+        
+        # retrieve training data
+        train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+                                            self.feature_set,self.train_ds))
+        
+        predictors = sorted(list(set(train_df.columns) - 
+                                 set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
+        
+        
+        #
+        # create features for next level using the hold out set
+        #
+        next_level = []
+        i = 0
+        for fold in k_folds:
+            i += 1
+            print('running fold: {:d}'.format(i))
+            train_idx = fold[0]
+            X_train = train_df.iloc[train_idx,:]
+            X_train = X_train.loc[:,predictors]
+            y_train = train_df[self.CONFIG['TARGET_VAR']].iloc[train_idx]
+            
+            model = self.ModelClass(**self.model_params)
+            
+            model.fit(X_train,y_train)
+            
+            #generate feature for next level
+            # get indices for hold out set
+            holdout_idx = fold[1]
+            
+            # set up predictors and target for hold out set
+            X_holdout = train_df.iloc[holdout_idx,:]
+            id_holdout = X_holdout.loc[:,self.CONFIG['ID_VAR']]
+            X_holdout = X_holdout.loc[:,predictors]
+            y_holdout = train_df[self.CONFIG['TARGET_VAR']].iloc[holdout_idx]
+        
+            # geneate features for next level
+            y_hat = pd.DataFrame(model.predict_proba(X_holdout),index=id_holdout.index)
+            y_hat.columns = [self.model_id+'_'+str(col) for col in y_hat.columns]
+            y_hat = id_holdout.join(y_holdout).join(y_hat)
+            
+            next_level.append(y_hat)
+            
+        #
+        # combine the generated features into single dataframe & save to disk
+        #
+        pd.concat(next_level).sort_values(self.CONFIG['ID_VAR'])\
+            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,self.model_id+'_features.csv'),
+                    index=False)
 
 
     def trainModel(self):
