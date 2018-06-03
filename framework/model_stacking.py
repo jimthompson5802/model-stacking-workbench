@@ -19,15 +19,16 @@ class FeatureGenerator():
     raw_test_features_df = None     # test data set for features
     
     def __init__(self,
-                 in_dir=None,
-                 out_dir=None,
-                 id_vars=['ID'],
-                 target_var='target'):
+                 in_dir=None,  # directory containing input training/test data sets
+                 out_dir=None, # directory to contain generated feature set
+                 id_vars=['ID'],  # variables used to identify records
+                 target_var='target'  # target variable name
+                 ):
 
-        self.in_dir = in_dir        # location for input data
-        self.out_dir = out_dir      # location to save generated feature set
-        self.id_vars = id_vars      # list of identifier attributes
-        self.target_var = target_var #  name of target variable
+        self.in_dir = in_dir        
+        self.out_dir = out_dir      
+        self.id_vars = id_vars      
+        self.target_var = target_var 
         
         #
         # get parameters 
@@ -108,12 +109,13 @@ class FeatureGenerator():
 class ModelTrainer():
     
     def __init__(self,
-                 ModelClass=None,
-                 model_params=None,
-                 model_id=None,
-                 feature_set=None,
-                 train_ds='train.csv',
-                 test_ds='test.csv'):
+                 ModelClass=None,  #Model Algorithm
+                 model_params=None,  # Model hyper-parameters
+                 model_id=None,    # model identifier
+                 feature_set=None,  # feature set to use
+                 train_ds='train.csv',  # feature set training data set
+                 test_ds='test.csv'  # feature set test data set
+                 ):   
         
         self.ModelClass = ModelClass
         self.model_params = model_params
@@ -123,7 +125,7 @@ class ModelTrainer():
         self.test_ds = test_ds
         
         #
-        # get parameters 
+        # get global parameters 
         #
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
