@@ -90,9 +90,11 @@ class FeatureGenerator():
      
 class ModelTrainer():
     
-    def __init__(feature_set=None,train_ds='train.csv'):
+    def __init__(feature_set=None,train_ds='train.csv',test_ds='test.csv'):
         pass
     
+    def createFeaturesForNextLevel():
+        pass
 
 
     def trainModel():
