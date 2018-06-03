@@ -12,3 +12,9 @@ ID_VAR: ['ID']
 # response variable
 #
 TARGET_VAR: 'target'
+
+
+#
+# Kaggle Submission Heaaders
+#
+KAGGLE_SUBMISSION_HEADERS: ['ID','PredictedProb']
