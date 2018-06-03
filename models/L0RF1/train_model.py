@@ -122,7 +122,13 @@ predictors = sorted(list(set(test_df.columns) - set(CONFIG['ID_VAR']) - set([CON
 test_id = test_df[CONFIG['ID_VAR']]
 
 predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
+predictions.columns = [model_id+'_'+str(x) for x in list(predictions.columns)]
 
+kaggle_submission_headers = CONFIG['KAGGLE_SUBMISSION_HEADERS']
 
+submission = test_id.join(predictions[model_id+'_1'])
+submission.columns = kaggle_submission_headers
 
+submission.to_csv(os.path.join(CONFIG['ROOT_DIR'],'models',model_id,
+                               model_id+'_submission.csv'),index=False)
 
