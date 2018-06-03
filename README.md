@@ -1,5 +1,8 @@
 # Framework for Model Stacking
 
-Model built on Kaggle compeition BNP-Paribas competition
+## Software development environment
+Anaconda 5.1
+
+Model algorithms based on scikit-learn algorithms
 
 
