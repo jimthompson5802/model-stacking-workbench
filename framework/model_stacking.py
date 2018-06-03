@@ -61,7 +61,7 @@ class FeatureGenerator():
         
         # split data into identifiers, predictors and target data frames
         self.raw_train_id_df = df.loc[:,self.id_vars]
-        self.raw_target_df = df.loc[:,[self.target_var]]
+        self.raw_train_target_df = df.loc[:,[self.target_var]]
         
         # isolate predictor variables
         predictors = sorted(set(df.columns) - set(self.id_vars) - set([self.target_var]))
@@ -84,23 +84,17 @@ class FeatureGenerator():
         #
         # append id-vars and target to new feature set and save as csv
         
-        try:
-            self.raw_train_id_df.join(self.raw_target_df)\
-                .join(new_train_features_df)\
-                .sort_values(self.id_vars)\
-                .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
-        except:
-            pass
+
+        self.raw_train_id_df.join(self.raw_train_target_df)\
+            .join(new_train_features_df)\
+            .sort_values(self.id_vars)\
+            .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
         
-        
-        try:
-            self.raw_test_id_df.join(self.raw_target_df)\
-                .join(new_test_features_df)\
-                .sort_values(self.id_vars)\
-                .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'test.csv'),index=False)
-        except:
-            pass
-        
+        self.raw_test_id_df\
+            .join(new_test_features_df)\
+            .sort_values(self.id_vars)\
+            .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'test.csv'),index=False)
+ 
 ###
 #
 #  Class for training models

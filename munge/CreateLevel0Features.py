@@ -1,4 +1,6 @@
 from framework.model_stacking import FeatureGenerator
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import Imputer
 
 #%%
 import yaml
@@ -22,18 +24,15 @@ print('root dir: ',CONFIG['ROOT_DIR'])
 #
 fs = FeatureGenerator('raw','L0FS01')
 
-#%%
 # get raw data
 fs.getRawData()
 
-#%%
 new_train = fs.raw_train_features_df
 new_train.fillna(-999,inplace=True)
 
 new_test = fs.raw_test_features_df
 new_test.fillna(-999,inplace=True)
 
-#%%
 fs.saveFeatureSet(new_train, new_test)
 
 
@@ -48,20 +47,49 @@ fs.getRawData()
 
 new_train = fs.raw_train_features_df
 
-#%%
 # find only numberic attributes
 numeric_predictors = [x for x in new_train.columns if new_train[x].dtype != 'O']
-#%%
+
 new_train = new_train.loc[:,numeric_predictors]
 new_train.fillna(-999,inplace=True)
 new_train.shape
 
-
-#%%
 new_test = fs.raw_test_features_df.loc[:,numeric_predictors]
 new_test.fillna(-999,inplace=True)
 new_test.shape
 
-#%%
 fs.saveFeatureSet(new_train, new_test)
 
+#%%
+#
+# feature set 3
+#
+fs = FeatureGenerator('raw','L0FS03')
+
+# get raw data
+fs.getRawData()
+
+new_train = fs.raw_train_features_df
+
+# find only numberic attributes
+numeric_predictors = [x for x in new_train.columns if new_train[x].dtype != 'O']
+
+new_train = new_train.loc[:,numeric_predictors]
+
+imp = Imputer()
+new_train = imp.fit_transform(new_train)
+
+mms = MinMaxScaler()
+new_train = pd.DataFrame(mms.fit_transform(new_train),index=fs.raw_train_id_df.index)
+
+print(new_train.shape)
+
+new_test = fs.raw_test_features_df.loc[:,numeric_predictors]
+new_test = imp.transform(new_test)
+new_test = pd.DataFrame(mms.transform(new_test),index=fs.raw_test_id_df.index)
+
+print(new_test.shape)
+
+fs.saveFeatureSet(new_train, new_test)
+
+#%%
