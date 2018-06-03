@@ -25,6 +25,13 @@ this_model = ModelTrainer(
 this_model.createFeaturesForNextLevel()
 
 
+#%%
+this_model.trainModel()
+
+
+#%%
+this_model.createKaggleSubmission()
+
 ###############################################################################
 #%%
 #

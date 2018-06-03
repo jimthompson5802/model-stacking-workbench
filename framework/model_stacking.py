@@ -191,11 +191,53 @@ class ModelTrainer():
 
 
     def trainModel(self):
-        pass
-    
+        #
+        # train model on complete training data set
+        #
+        # retrieve training data
+        train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',self.feature_set,self.train_ds))
+        predictors = sorted(list(set(train_df.columns) - set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
+        
+        
+        X_train = train_df[predictors]
+        y_train = train_df[self.CONFIG['TARGET_VAR']]
+            
+        model = self.ModelClass(**self.model_params)
+            
+        model.fit(X_train,y_train)
+        
+        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                               self.model_id,self.model_id+'_model.pkl'),'wb') as f:
+            pickle.dump(model,f)
+            
 
-
-    def createSubmission(self,feature_set=None,test_ds='test.csv'):
-        pass
+    def createKaggleSubmission(self,feature_set=None,test_ds='test.csv'):
+        #
+        # create Kaggle Submission
+        #
+        # Assumes:  trained model has been saved under "`model_id`_model.pkl"
+        #
+        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
+                               self.model_id+'_model.pkl'),'rb') as f:
+            model = pickle.load(f)
+            
+        # create data set to make predictions
+        test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+                                           self.feature_set,self.test_ds))
+        
+        predictors = sorted(list(set(test_df.columns) - 
+                                 set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
+        
+        test_id = test_df[self.CONFIG['ID_VAR']]
+        
+        predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
+        predictions.columns = [self.model_id+'_'+str(x) for x in list(predictions.columns)]
+        
+        submission = test_id.join(predictions[self.model_id+'_1'])
+        submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
+        
+        submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                       self.model_id,
+                                       self.model_id+'_submission.csv'),index=False)
     
 
