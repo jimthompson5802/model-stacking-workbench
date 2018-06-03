@@ -34,9 +34,9 @@ class FeatureGenerator():
         # get parameters 
         #
         with open('./config.yml') as f:
-            CONFIG = yaml.load(f.read())
+            self.CONFIG = yaml.load(f.read())
             
-        self.root_dir = CONFIG['ROOT_DIR']
+        self.root_dir = self.CONFIG['ROOT_DIR']
         
         self.makeOutputDirectory()
        
