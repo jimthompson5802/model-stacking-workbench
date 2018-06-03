@@ -25,8 +25,8 @@ train_df = pd.read_csv(os.path.join(CONFIG['ROOT_DIR'],'data/raw/train.csv'))
 folds = []
 
 kf = KFold(n_splits=5,shuffle=True,random_state=29)
-for train_index, test_index in kf.split(train_df):
-    folds.append((train_index,test_index))
+for train_index, holdout_index in kf.split(train_df):
+    folds.append((train_index,holdout_index))
     
 
 #%%
