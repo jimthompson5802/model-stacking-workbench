@@ -13,16 +13,24 @@ class FeatureGenerator():
     raw_train_features_df = None    # pandas dataframe hoding orginial predictor variables    
     raw_test_features_df = None     # test data set for features
     
-    def __init__(self,root_dir=None,
+    def __init__(self,
                  in_dir=None,
                  out_dir=None,
                  id_vars=['ID'],
                  target_var='target'):
-        self.root_dir = root_dir
+
         self.in_dir = in_dir        # location for input data
         self.out_dir = out_dir      # location to save generated feature set
         self.id_vars = id_vars      # list of identifier attributes
         self.target_var = target_var #  name of target variable
+        
+        #
+        # get parameters 
+        #
+        with open('./config.yml') as f:
+            CONFIG = yaml.load(f.read())
+            
+        self.root_dir = CONFIG['ROOT_DIR']
         
         #create directory to hold feature set
         # clean out out_dir
