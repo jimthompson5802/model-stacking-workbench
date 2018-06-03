@@ -98,19 +98,33 @@ class FeatureGenerator():
      
 class ModelTrainer():
     
-    def __init__(feature_set=None,train_ds='train.csv',test_ds='test.csv'):
+    def __init__(self,
+                 Model=None,
+                 model_params=None,
+                 model_id=None,
+                 feature_set=None,
+                 train_ds='train.csv',
+                 test_ds='test.csv'):
+        
+        self.ModelClass = ModelClass
+        self.model_params = model_params
+        self.model_id = model_id
+        self.feature_set = feature_set
+        self.train_ds = train_ds
+        self.test_ds = test_ds
+        
+        
+    
+    def createFeaturesForNextLevel(self):
+        pass
+
+
+    def trainModel(self):
         pass
     
-    def createFeaturesForNextLevel():
-        pass
 
 
-    def trainModel():
-        pass
-    
-
-
-    def createSubmission(feature_set=None,test_ds='test.csv'):
+    def createSubmission(self,feature_set=None,test_ds='test.csv'):
         pass
     
 
