@@ -73,6 +73,7 @@ class FeatureGenerator():
         try:
             self.raw_train_id_df.join(self.raw_target_df)\
                 .join(new_train_features_df)\
+                .sort_values(self.id_vars)\
                 .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
         except:
             pass
@@ -81,6 +82,7 @@ class FeatureGenerator():
         try:
             self.raw_test_id_df.join(self.raw_target_df)\
                 .join(new_test_features_df)\
+                .sort_values(self.id_vars)\
                 .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'test.csv'),index=False)
         except:
             pass
