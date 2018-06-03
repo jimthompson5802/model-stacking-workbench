@@ -38,7 +38,7 @@ class FeatureGenerator():
             
         self.root_dir = CONFIG['ROOT_DIR']
         
-        makeOutputDirectory()
+        self.makeOutputDirectory()
        
     def makeOutputDirectory(self):
         #create directory to hold feature set
