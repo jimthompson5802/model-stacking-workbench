@@ -15,90 +15,89 @@ import numpy as np
 #
 with open('./config.yml') as f:
     CONFIG = yaml.load(f.read())
-    
-print('root dir: ',CONFIG['ROOT_DIR'])
 
 #%%
 #
 # feature set 1
 #
+print("Preparing Level 0 Feature Set 1")
+
 fs = FeatureGenerator('raw','L0FS01')
 
 # get raw data
-fs.getRawData()
+X_train, y_train, X_test = fs.getRawData()
 
-new_train = fs.raw_train_features_df
-new_train.fillna(-999,inplace=True)
+X_train.fillna(-999,inplace=True)
 
-new_test = fs.raw_test_features_df
-new_test.fillna(-999,inplace=True)
+X_test.fillna(-999,inplace=True)
 
-fs.saveFeatureSet(new_train, new_test)
+fs.saveFeatureSet(X_train, y_train, X_test)
 
 
 #%%
 #
 # feature set 2
 #
+print("Preparing Level 0 Feature Set 2")
+
 fs = FeatureGenerator('raw','L0FS02')
 
 # get raw data
-fs.getRawData()
+X_train, y_train, X_test = fs.getRawData()
 
-new_train = fs.raw_train_features_df
 
 # find only numberic attributes
-numeric_predictors = [x for x in new_train.columns if new_train[x].dtype != 'O']
+numeric_predictors = [x for x in X_train.columns if X_train[x].dtype != 'O']
 
-new_train = new_train.loc[:,numeric_predictors]
-new_train.fillna(-999,inplace=True)
-new_train.shape
+X_train = X_train.loc[:,numeric_predictors]
+X_train.fillna(-999,inplace=True)
+X_train.shape
 
-new_test = fs.raw_test_features_df.loc[:,numeric_predictors]
-new_test.fillna(-999,inplace=True)
-new_test.shape
+X_test = X_test.loc[:,numeric_predictors]
+X_test.fillna(-999,inplace=True)
+X_test.shape
 
-fs.saveFeatureSet(new_train, new_test)
+fs.saveFeatureSet(X_train, y_train, X_test)
 
 #%%
 #
 # feature set 3
 #
+print("Preparing Level 0 Feature Set 3")
+
 fs = FeatureGenerator('raw','L0FS03')
 
 # get raw data
-fs.getRawData()
-
-new_train = fs.raw_train_features_df
+X_train, y_train, X_test = fs.getRawData()
 
 # find only numberic attributes
-numeric_predictors = [x for x in new_train.columns if new_train[x].dtype != 'O']
+numeric_predictors = [x for x in X_train.columns if X_train[x].dtype != 'O']
 
-new_train = new_train.loc[:,numeric_predictors]
+X_train = X_train.loc[:,numeric_predictors]
 
 # impute mean value for missing values
 imp = Imputer()
-new_train = imp.fit_transform(new_train)
+X_train = imp.fit_transform(X_train)
 
 mms = MinMaxScaler()
 
 # min/max scale data and convert to data frame, ensure index values match
 # original data frame
-new_train = pd.DataFrame(mms.fit_transform(new_train),index=fs.raw_train_id_df.index)
+X_train = pd.DataFrame(mms.fit_transform(X_train),index=fs.raw_train_id_df.index)
+X_train.columns = numeric_predictors
 
-print(new_train.shape)
-
-new_test = fs.raw_test_features_df.loc[:,numeric_predictors]
+X_test = X_test.loc[:,numeric_predictors]
 
 # impute missinvg values
-new_test = imp.transform(new_test)
+X_test = imp.transform(X_test)
 
 # Apply min/max transform and 
 # convert to data frame,  ensure index values match original data frame
-new_test = pd.DataFrame(mms.transform(new_test),index=fs.raw_test_id_df.index)
+X_test = pd.DataFrame(mms.transform(X_test),index=fs.raw_test_id_df.index)
+X_test.columns = numeric_predictors
 
 
 # save new feature set
-fs.saveFeatureSet(new_train, new_test)
+fs.saveFeatureSet(X_train, y_train, X_test)
 
 #%%

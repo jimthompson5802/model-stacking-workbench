@@ -13,10 +13,6 @@ import pickle
 ###
 class FeatureGenerator():
     
-    raw_id_df = None        # pandas data frame to hold id variables
-    raw_target_df = None    ## pandas series holding target variable
-    raw_train_features_df = None    # pandas dataframe hoding orginial predictor variables    
-    raw_test_features_df = None     # test data set for features
     
     def __init__(self,
                  in_dir=None,  # directory containing input training/test data sets
@@ -64,21 +60,25 @@ class FeatureGenerator():
         
         # split data into identifiers, predictors and target data frames
         self.raw_train_id_df = df.loc[:,self.id_vars]
-        self.raw_train_target_df = df.loc[:,[self.target_var]]
+        raw_train_target_df = df.loc[:,[self.target_var]]
         
         # isolate predictor variables
         predictors = sorted(set(df.columns) - set(self.id_vars) - set([self.target_var]))
         
         # isoloate training predictiors
-        self.raw_train_features_df = df.loc[:,predictors]
+        raw_train_features_df = df.loc[:,predictors]
         
         # get test data set
         df = pd.read_csv(os.path.join(self.root_dir,'data',self.in_dir,'test.csv'))
         self.raw_test_id_df = df.loc[:,self.id_vars]
-        self.raw_test_features_df = df.loc[:,predictors]
+        raw_test_features_df = df.loc[:,predictors]
+        
+        return raw_train_features_df, raw_train_target_df, raw_test_features_df
         
     
-    def saveFeatureSet(self,new_train_features_df=None,new_test_features_df=None):
+    def saveFeatureSet(self,new_train_features_df=None,
+                       new_train_target_df=None,
+                       new_test_features_df=None):
         #
         # default behaviour - can be overriddent for different new feature storage
         #
@@ -88,7 +88,7 @@ class FeatureGenerator():
         # append id-vars and target to new feature set and save as csv
         
 
-        self.raw_train_id_df.join(self.raw_train_target_df)\
+        self.raw_train_id_df.join(new_train_target_df)\
             .join(new_train_features_df)\
             .sort_values(self.id_vars)\
             .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
