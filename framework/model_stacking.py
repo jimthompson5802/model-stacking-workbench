@@ -5,6 +5,7 @@ import os
 import os.path
 import shutil
 import pickle
+import datetime
 
 ###
 #
@@ -285,4 +286,29 @@ class ModelTrainer():
                                        self.model_id,
                                        self.model_id+'_submission.csv'),index=False)
     
-
+###
+#
+#  Model Performance Tracker
+#
+###
+class ModelPerformanceTracker():
+    
+    tracking_file = None
+    
+    def __init__(self,model_trainer=None):
+        self.model_trainer = model_trainer
+        
+        #
+        # get global parameters 
+        #
+        with open('./config.yml') as f:
+            self.CONFIG = yaml.load(f.read())
+            
+        self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],'results','model_performance_data.tsv')
+        
+        
+    
+    def recordModelPerformance(self,
+                               cv_performanc_list=None  # list of cv performance metrics
+                               ):
+        
