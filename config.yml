@@ -1,7 +1,7 @@
 #
 # base directory for model building
 #
-ROOT_DIR: /Users/jim/Desktop/Kaggle/model-stacking-framework
+ROOT_DIR: '.'
 
 #
 # variablses that serve as identifiers
