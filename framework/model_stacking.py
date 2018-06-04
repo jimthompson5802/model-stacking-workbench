@@ -312,7 +312,7 @@ class ModelPerformanceTracker():
                                cv_performanc_list=None  # list of cv performance metrics
                                ):
         # retrieve basic model information from model trainer
-        model_params = self.model_trainer.model_params
+        model_params = str(self.model_trainer.model_params)
         model_id = self.model_trainer.model_id
         feature_set = self.model_trainer.feature_set
         
