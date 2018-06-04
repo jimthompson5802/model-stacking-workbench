@@ -128,17 +128,41 @@ class ModelTrainer():
             self.CONFIG = yaml.load(f.read())
             
     def cleanPriorResults(self):
-        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                               self.model_id,
-                               self.model_id+'_features.csv'))
-
-        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                               self.model_id,
-                               self.model_id+'_model.pkl'))
-         
-        os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                               self.model_id,
-                               self.model_id+'_submission.csv'))
+        try:
+            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,
+                                   self.model_id+'_features.csv'))
+        except:
+            pass
+        
+        
+        try:    
+            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,
+                                   self.model_id+'_train_features.csv'))
+        except:
+            pass
+        
+        try:    
+            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,
+                                   self.model_id+'_test_features.csv'))
+        except:
+            pass
+        
+        try:
+            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,
+                                   self.model_id+'_model.pkl'))
+        except:
+            pass
+        
+        try:
+            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,
+                                   self.model_id+'_submission.csv'))
+        except:
+            pass
             
     def createFeaturesForNextLevel(self):
         #
@@ -198,7 +222,9 @@ class ModelTrainer():
         # combine the generated features into single dataframe & save to disk
         #
         pd.concat(next_level).sort_values(self.CONFIG['ID_VAR'])\
-            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,self.model_id+'_features.csv'),
+            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                 self.model_id,
+                                 self.model_id+'_train_features.csv'),
                     index=False)
 
 
@@ -245,6 +271,13 @@ class ModelTrainer():
         predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
         predictions.columns = [self.model_id+'_'+str(x) for x in list(predictions.columns)]
         
+        # save test predictions for next level
+        pred_df = test_id.join(predictions).sort_values(self.CONFIG['ID_VAR'])
+        pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                    self.model_id,
+                                    self.model_id+'_test_features.csv'), index=False)
+        
+        # save Kaggle submission
         submission = test_id.join(predictions[self.model_id+'_1'])
         submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
         
