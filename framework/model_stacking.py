@@ -182,7 +182,7 @@ class ModelTrainer():
         #
         # retrieve KFold specifiction
         #
-        with open(os.path.join(self.CONFIG['ROOT_DIR'],'data','fold_specification.pkl'),'rb') as f:
+        with open(os.path.join(self.CONFIG['ROOT_DIR'],'data','k-fold_specification.pkl'),'rb') as f:
             k_folds = pickle.load(f)
             
          
