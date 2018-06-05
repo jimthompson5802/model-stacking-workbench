@@ -141,6 +141,9 @@ class ModelTrainer():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
+        print('Model training starting for {} at {:%Y-%m-%d %H:%M:%S}'\
+              .format(self.model_id,datetime.datetime.now()))
+            
     def cleanPriorResults(self):
         try:
             os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
@@ -179,6 +182,9 @@ class ModelTrainer():
             pass
             
     def createFeaturesForNextLevel(self):
+        
+        print('Starting createFeaturesForNextLevel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        
         #
         # retrieve KFold specifiction
         #
@@ -207,7 +213,7 @@ class ModelTrainer():
         i = 0
         for fold in k_folds:
             i += 1
-            print('running fold: {:d}'.format(i))
+            print('running fold: {:d} at {:%Y-%m-%d %H:%M:%S}'.format(i,datetime.datetime.now()))
             train_idx = fold[0]
             X_train = train_df.iloc[train_idx,:]
             X_train = X_train.loc[:,predictors]
@@ -239,6 +245,8 @@ class ModelTrainer():
             
             next_level.append(y_hat)
             
+        print('Completed createFeaturesForNextLevel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+            
         #
         # combine the generated features into single dataframe & save to disk
         #
@@ -250,6 +258,8 @@ class ModelTrainer():
 
 
     def trainModel(self):
+        print('Starting trainModel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        
         #
         # train model on complete training data set
         #
@@ -273,7 +283,8 @@ class ModelTrainer():
         with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
                                self.model_id,self.model_id+'_model.pkl'),'wb') as f:
             pickle.dump(model,f)
-            
+         
+        print('Completed trainModel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 
     def createKaggleSubmission(self,feature_set=None,test_ds='test.csv'):
         #
@@ -281,6 +292,10 @@ class ModelTrainer():
         #
         # Assumes:  trained model has been saved under "`model_id`_model.pkl"
         #
+        
+        print('Starting createKaggleSubmission: {:%Y-%m-%d %H:%M:%S}'\
+              .format(datetime.datetime.now()))
+        
         with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
                                self.model_id+'_model.pkl'),'rb') as f:
             model = pickle.load(f)
@@ -310,6 +325,9 @@ class ModelTrainer():
         submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
                                        self.model_id,
                                        self.model_id+'_submission.csv'),index=False)
+        
+        print('Completed createKaggleSubmission: {:%Y-%m-%d %H:%M:%S}'\
+              .format(datetime.datetime.now()))
     
 ###
 #
