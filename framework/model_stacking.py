@@ -371,7 +371,7 @@ class ModelPerformanceTracker():
                            np.max(self.model_trainer.cv_performance_metric),   #cv_max_metric
                            np.mean(self.model_trainer.cv_performance_metric),   #cv_avg_metric
                            "",  #public_leaderboard
-                           '"'+model_params+'"']).T
+                           model_params]).T
         df.columns = ['date_time',
                       'model_id',
                       'feature_set',
