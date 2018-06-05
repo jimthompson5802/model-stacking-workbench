@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #%%
-from framework.model_stacking import ModelTrainer
+from framework.model_stacking import ModelTrainer, ModelPerformanceTracker
 from sklearn.ensemble import RandomForestClassifier as ThisModel
 
 #%%
@@ -14,7 +14,7 @@ this_model = ModelTrainer(
         feature_set='L0FS02'  # feature set to use
         )
 
-
+model_tracker = ModelPerformanceTracker(model_trainer=this_model)
 #%%
 #
 # clear out old results
@@ -27,18 +27,19 @@ this_model.cleanPriorResults()
 #
 this_model.createFeaturesForNextLevel()
 
-
 #%%
 #
 # train model on all the data
 #
 this_model.trainModel()
 
-
 #%%
 #
 # create Kaggle submission
 #
 this_model.createKaggleSubmission()
+
+#%%
+model_tracker.recordModelPerformance()
 
 #%%

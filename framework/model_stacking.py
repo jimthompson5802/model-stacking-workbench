@@ -6,6 +6,18 @@ import os.path
 import shutil
 import pickle
 import datetime
+import time
+
+
+from sklearn.metrics import log_loss
+###
+#
+# function to calculate Kaggle performance metric during CV 
+#
+###
+def calculateKaggleMetric(y=None,y_hat=None):
+    return log_loss(y,y_hat)
+
 
 ###
 #
@@ -240,10 +252,15 @@ class ModelTrainer():
         
         X_train = train_df[predictors]
         y_train = train_df[self.CONFIG['TARGET_VAR']]
+        
+        self.training_rows = X_train.shape[0]
+        self.training_columns = X_train.shape[1]
             
         model = self.ModelClass(**self.model_params)
-            
+        
+        start_training = time.time()
         model.fit(X_train,y_train)
+        self.training_time = time.time() - start_training
         
         with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
                                self.model_id,self.model_id+'_model.pkl'),'wb') as f:
@@ -304,18 +321,50 @@ class ModelPerformanceTracker():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
-        self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],'results','model_performance_data.tsv')
+        self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],'results','model_performance_data.csv')
         
         
     
     def recordModelPerformance(self,
-                               cv_performanc_list=None  # list of cv performance metrics
+                               cv_metric_list=None  # list of cv performance metrics
                                ):
         # retrieve basic model information from model trainer
         model_params = str(self.model_trainer.model_params)
         model_id = self.model_trainer.model_id
         feature_set = self.model_trainer.feature_set
+        date_time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
         
-        ####
+        #create a row
+        df = pd.DataFrame([date_time,
+                           model_id,
+                           feature_set,
+                           self.model_trainer.training_rows,
+                           self.model_trainer.training_columns,
+                           self.model_trainer.training_time,
+                           0,   #cv_min_metric
+                           0,   #cv_max_metric
+                           0,   #cv_avg_metric
+                           "",  #public_leaderboard
+                           '"'+model_params+'"']).T
+        df.columns = ['date_time',
+                      'model_id',
+                      'feature_set',
+                      'number_of_rows',
+                      'number_of_columns',
+                      'training_time',
+                      'cv_min_metric',
+                      'cv_max_metric',
+                      'cv_avg_metric',
+                      'public_leaderboard',
+                      'model_params']
         
+        
+        # write out model performance metric
+        if not os.path.isfile(self.tracking_file):
+            
+           df.to_csv(self.tracking_file, header=True, index=False)
+           
+        else: # else it exists so append without writing the header
+        
+           df.to_csv(self.tracking_file, mode='a', header=False, index=False)
         
