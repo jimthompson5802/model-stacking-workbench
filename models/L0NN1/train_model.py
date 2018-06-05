@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #%%
-from framework.model_stacking import ModelTrainer
+from framework.model_stacking import ModelTrainer, ModelPerformanceTracker
 from sklearn.neural_network import MLPClassifier as ThisModel
 
 #%%
@@ -14,7 +14,7 @@ this_model = ModelTrainer(
         feature_set='L0FS03'  # feature set to use
         )
 
-
+model_tracker = ModelPerformanceTracker(model_trainer=this_model)
 #%%
 #
 # clear out old results
@@ -40,5 +40,11 @@ this_model.trainModel()
 # create Kaggle submission
 #
 this_model.createKaggleSubmission()
+
+#%%
+#
+# record model performance metrics
+#
+model_tracker.recordModelPerformance()
 
 #%%

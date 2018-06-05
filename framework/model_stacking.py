@@ -7,6 +7,7 @@ import shutil
 import pickle
 import datetime
 import time
+import numpy as np
 
 
 from sklearn.metrics import log_loss
@@ -200,6 +201,8 @@ class ModelTrainer():
         #
         # create features for next level using the hold out set
         #
+        self.cv_performance_metric = []
+        
         next_level = []
         i = 0
         for fold in k_folds:
@@ -223,9 +226,14 @@ class ModelTrainer():
             id_holdout = X_holdout.loc[:,self.CONFIG['ID_VAR']]
             X_holdout = X_holdout.loc[:,predictors]
             y_holdout = train_df[self.CONFIG['TARGET_VAR']].iloc[holdout_idx]
+            
+            # make preduction on hold out set to calculate metric and generate
+            # features for next level of stack
+            y_hat = model.predict_proba(X_holdout)
+            self.cv_performance_metric.append(calculateKaggleMetric(y_holdout,y_hat))
         
             # geneate features for next level
-            y_hat = pd.DataFrame(model.predict_proba(X_holdout),index=id_holdout.index)
+            y_hat = pd.DataFrame(y_hat,index=id_holdout.index)
             y_hat.columns = [self.model_id+'_'+str(col) for col in y_hat.columns]
             y_hat = id_holdout.join(y_holdout).join(y_hat)
             
@@ -341,9 +349,9 @@ class ModelPerformanceTracker():
                            self.model_trainer.training_rows,
                            self.model_trainer.training_columns,
                            self.model_trainer.training_time,
-                           0,   #cv_min_metric
-                           0,   #cv_max_metric
-                           0,   #cv_avg_metric
+                           np.min(self.model_trainer.cv_performance_metric),   #cv_min_metric
+                           np.max(self.model_trainer.cv_performance_metric),   #cv_max_metric
+                           np.mean(self.model_trainer.cv_performance_metric),   #cv_avg_metric
                            "",  #public_leaderboard
                            '"'+model_params+'"']).T
         df.columns = ['date_time',

@@ -40,6 +40,9 @@ this_model.trainModel()
 this_model.createKaggleSubmission()
 
 #%%
+#
+# record model performance metrics
+#
 model_tracker.recordModelPerformance()
 
 #%%
