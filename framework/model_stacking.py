@@ -193,8 +193,8 @@ class ModelTrainer():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
-        print('Model training starting for {} at {:%Y-%m-%d %H:%M:%S}'\
-              .format(self.model_id,datetime.datetime.now()))
+        print('Model training starting for {} with feature set {} at {:%Y-%m-%d %H:%M:%S}'\
+              .format(self.model_id,self.feature_set,datetime.datetime.now()))
             
     def cleanPriorResults(self):
         try:
