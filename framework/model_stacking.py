@@ -26,7 +26,35 @@ def calculateKaggleMetric(y=None,y_hat=None):
 #
 ###
 class FeatureGenerator():
+    """
+    Methods useful for building feature sets for modeling.  
+
+    Expected usage:
+        
+    fs = FeatureGenrator()
     
+    X_train, y_train, X_test = fs.getRawData()
+    
+    # user specifed code to create feature set and perform tasks such as
+    #    imputing missing values
+    #    encoding categorical values
+    #    standardize values
+    #    create synthetic variables
+    X_train_fs = ...
+    y_train_fs = ...
+    X_test_fs =
+    
+    fs.saveFeatureSet(X_train_fs, y_train_fs, X_test_fs)
+    
+    Arguments:
+        in_dir: directory containing the input data set to transform to a 
+                feature set.
+        out_dir: directory to contain the new feature set.
+        id_var: python list containing attribute(s) that are used to identify
+                the record.
+        target_var: name of the variable to be predicted
+    
+    """    
     
     def __init__(self,
                  in_dir=None,  # directory containing input training/test data sets
@@ -48,9 +76,9 @@ class FeatureGenerator():
             
         self.root_dir = self.CONFIG['ROOT_DIR']
         
-        self.makeOutputDirectory()
+        self._makeOutputDirectory()
        
-    def makeOutputDirectory(self):
+    def _makeOutputDirectory(self):
         #create directory to hold feature set
         # clean out out_dir
         try:
@@ -62,14 +90,18 @@ class FeatureGenerator():
     
     
     def getRawData(self):
-        #
-        # default behaviour - can be overridden for different raw data structures
-        #
-        # Assumes existence of train.csv and test.csv in in_dir location
-        # Expected function: create raw_id_df, raw_target_df, raw_train_features_df
-        # and raw_test_features_df data frames.
-        #
-       
+        """
+        default behaviour - can be overridden for different raw data structures
+
+        Assumes existence of train.csv and test.csv in in_dir location
+        Expected function: create raw_id_df, raw_target_df, raw_train_features_df
+        and raw_test_features_df data frames.
+        
+        Returns tuple containing the following elements
+            raw_train_features_df: dataframe containing only train predictors to transform
+            raw_train_target_df: dataframe containing target variable transform
+            raw_test_features_df: dataframe containing test predictors to transform
+        """
         df = pd.read_csv(os.path.join(self.root_dir,'data',self.in_dir,'train.csv'))
         
         # split data into identifiers, predictors and target data frames
@@ -93,14 +125,19 @@ class FeatureGenerator():
     def saveFeatureSet(self,new_train_features_df=None,
                        new_train_target_df=None,
                        new_test_features_df=None):
-        #
-        # default behaviour - can be overriddent for different new feature storage
-        #
-        # append id_vars and target_var save new_train_features_df and 
-        # new_test_features_df in self.out_dir
-        #
-        # append id-vars and target to new feature set and save as csv
+        """
+        default behaviour - can be overriddent for different new feature storage
         
+        append id_vars and target_var save new_train_features_df and 
+        new_test_features_df in self.out_dir
+        
+        append id_vars and target to new feature set and save as csv
+        
+        Arguments:
+            new_train_features_df: dataframe containg transformed train predictors
+            new_train_target_df:  dataframe containing transformed target variable
+            new_test_features_df: dataframe containing tarnsformed test predictors
+        """
 
         self.raw_train_id_df.join(new_train_target_df)\
             .join(new_train_features_df)\
@@ -118,10 +155,25 @@ class FeatureGenerator():
 #
 ###  
 class ModelTrainer():
+    """
+    Methods to train model, convert predictions from the model into features
+    for the next level.
+    
+    Arguments:
+        ModelClass: Python class implementation of the model algorithm.  Currently
+                    this class is assumed to following class structure of 
+                    scikit-learn.
+        model_params: Python dictionary specifying parameters for the model.
+        model_id: character string used to identify the model
+        feature_set: Feature identifier used in FeatureGenerator
+        train_ds: training data set
+        test_ds: test data set
+    
+    """
     
     def __init__(self,
                  ModelClass=None,  #Model Algorithm
-                 model_params=None,  # Model hyper-parameters
+                 model_params={},  # Model hyper-parameters
                  model_id=None,    # model identifier
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
