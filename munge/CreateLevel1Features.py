@@ -62,12 +62,15 @@ features = fs.getRawData()
 found_first_df = False
 for t in features:
     if not found_first_df:
-        train_df = t[0].iloc[:,:2].join(t[0].iloc[:,3])
-        test_df = t[1].iloc[:,:1].join(t[1].iloc[:,2])
+        fs.raw_train_id_df = pd.DataFrame(t[0].iloc[:,0])
+        y_train_df = pd.DataFrame(t[0].iloc[:,1])
+        X_train_df = pd.DataFrame(t[0].iloc[:,3])
+        fs.raw_test_id_df = pd.DataFrame(t[1].iloc[:,0])
+        X_test_df = pd.DataFrame(t[1].iloc[:,2])
         found_first_df = True
     else:
-        train_df = train_df.join(t[0].iloc[:,3])
-        test_df = test_df.join(t[1].iloc[:,2])
+        X_train_df = X_train_df.join(t[0].iloc[:,3])
+        X_test_df = X_test_df.join(t[1].iloc[:,2])
         
 #%%
-fs.saveFeatureSet(train_df,test_df)
+fs.saveFeatureSet(X_train_df,y_train_df,X_test_df)
