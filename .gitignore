@@ -4,3 +4,4 @@ data
 *.csv
 *.pkl
 results
+reports/.ipynb_checkpoints
