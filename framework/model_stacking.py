@@ -165,6 +165,9 @@ class ModelTrainer():
                     scikit-learn.
         model_params: Python dictionary specifying parameters for the model.
         model_id: character string used to identify the model
+        test_data_method: method for generating test data predictions
+                          Type1 - train model on all data to generate test data prediction
+                          Type2 - average test data predictions from k-fold training
         feature_set: Feature identifier used in FeatureGenerator
         train_ds: training data set
         test_ds: test data set
@@ -175,6 +178,7 @@ class ModelTrainer():
                  ModelClass=None,  #Model Algorithm
                  model_params={},  # Model hyper-parameters
                  model_id=None,    # model identifier
+                 test_data_method='Type1', #training method
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
                  test_ds='test.csv'  # feature set test data set
@@ -183,6 +187,13 @@ class ModelTrainer():
         self.ModelClass = ModelClass
         self.model_params = model_params
         self.model_id = model_id
+        
+        if test_data_method == 'Type1' or test_data_method == 'Type2':
+            self.test_data_method = test_data_method
+        else:
+            raise ValueError("test_data_method=" + test_data_method 
+                             + ", valid vaules are 'Type1' or 'Type2'")
+        
         self.feature_set = feature_set
         self.train_ds = train_ds
         self.test_ds = test_ds
@@ -224,9 +235,11 @@ class ModelTrainer():
             pass
         
             
-    def createFeaturesForNextLevel(self):
+
+    def trainModel(self):
         
-        print('Starting createFeaturesForNextLevel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        print('Starting model training: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+        start_training = time.time()
         
         #
         # retrieve KFold specifiction
@@ -246,12 +259,15 @@ class ModelTrainer():
         predictors = sorted(list(set(train_df.columns) - 
                                  set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
         
+
+        
         
         #
         # create features for next level using the hold out set
         #
         self.cv_performance_metric = []
         
+        models_list = []
         next_level = []
         i = 0
         for fold in k_folds:
@@ -288,7 +304,9 @@ class ModelTrainer():
             
             next_level.append(y_hat)
             
-        print('Completed createFeaturesForNextLevel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
+            if self.test_data_method == 'Type2':
+                models_list.append(model)
+            
             
         #
         # combine the generated features into single dataframe & save to disk
@@ -298,36 +316,36 @@ class ModelTrainer():
                                  self.out_dir,
                                  'train.csv'),
                     index=False)
-
-
-    def trainModel(self):
-        print('Starting trainModel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
-        
-        #
-        # train model on complete training data set
-        #
-        # retrieve training data
-        train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',self.feature_set,self.train_ds))
-        predictors = sorted(list(set(train_df.columns) - set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
-        
-        
-        X_train = train_df[predictors]
-        y_train = train_df[self.CONFIG['TARGET_VAR']]
-        
-        self.training_rows = X_train.shape[0]
-        self.training_columns = X_train.shape[1]
+       
+        # method for handling test data
+        if self.test_data_method == 'Type1':
+            #
+            # train model on complete training data set
+            #
+    
+            X_train = train_df[predictors]
+            y_train = train_df[self.CONFIG['TARGET_VAR']]
             
-        model = self.ModelClass(**self.model_params)
+            self.training_rows = X_train.shape[0]
+            self.training_columns = X_train.shape[1]
+                
+            model = self.ModelClass(**self.model_params)
+            
+
+            model.fit(X_train,y_train)
+
+            
+            with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,self.model_id+'_model.pkl'),'wb') as f:
+                pickle.dump(model,f)
+        else:
+            self.training_rows = train_df.shape[0]
+            self.training_columns = len(predictors)
+            with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                                   self.model_id,self.model_id+'_model.pkl'),'wb') as f:
+                pickle.dump(models_list,f)            
         
-        start_training = time.time()
-        model.fit(X_train,y_train)
         self.training_time = time.time() - start_training
-        
-        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                               self.model_id,self.model_id+'_model.pkl'),'wb') as f:
-            pickle.dump(model,f)
-         
-        print('Completed trainModel: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
 
     def createKaggleSubmission(self,feature_set=None,test_ds='test.csv'):
         #
@@ -352,9 +370,22 @@ class ModelTrainer():
         
         test_id = test_df[self.CONFIG['ID_VAR']]
         
-        predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
+        # if single model, then generate predictions for test data
+        # if list then generate predictions for each model in list and average test data prediction
+        if isinstance(model,(list)):
+            pred_list = []
+            for m in model:
+                pred_list.append(m.predict_proba(test_df[predictors]))
+            
+            preds = np.dstack(pred_list).mean(axis=2)
+            predictions = pd.DataFrame(preds,index=test_df.index)
+                
+        else:
+            predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
+            
         predictions.columns = [self.model_id+'_'+str(x) for x in list(predictions.columns)]
         
+
         # save test predictions for next level
         pred_df = test_id.join(predictions).sort_values(self.CONFIG['ID_VAR'])
         pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
