@@ -178,7 +178,7 @@ class ModelTrainer():
                  ModelClass=None,  #Model Algorithm
                  model_params={},  # Model hyper-parameters
                  model_id=None,    # model identifier
-                 test_data_method='Type1', #training method
+                 test_prediction_method='Method1', #training method
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
                  test_ds='test.csv'  # feature set test data set
@@ -188,11 +188,11 @@ class ModelTrainer():
         self.model_params = model_params
         self.model_id = model_id
         
-        if test_data_method == 'Type1' or test_data_method == 'Type2':
-            self.test_data_method = test_data_method
+        if test_prediction_method == 'Method1' or test_prediction_method == 'Method2':
+            self.test_prediction_method = test_prediction_method
         else:
-            raise ValueError("test_data_method=" + test_data_method 
-                             + ", valid vaules are 'Type1' or 'Type2'")
+            raise ValueError("test_prediction_method=" + test_prediction_method 
+                             + ", valid vaules are 'Method1' or 'Method2'")
         
         self.feature_set = feature_set
         self.train_ds = train_ds
@@ -304,7 +304,7 @@ class ModelTrainer():
             
             next_level.append(y_hat)
             
-            if self.test_data_method == 'Type2':
+            if self.test_prediction_method == 'Method2':
                 models_list.append(model)
             
             
@@ -318,7 +318,7 @@ class ModelTrainer():
                     index=False)
        
         # method for handling test data
-        if self.test_data_method == 'Type1':
+        if self.test_prediction_method == 'Method1':
             #
             # train model on complete training data set
             #
