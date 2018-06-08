@@ -11,7 +11,7 @@ this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
         model_params=dict(hidden_layer_sizes=(100,)), #hyper-parameters
         model_id='L0NN1',   # Model Identifier
-        feature_set='L0FS03'  # feature set to use
+        feature_set='KFS03'  # feature set to use
         )
 
 model_tracker = ModelPerformanceTracker(model_trainer=this_model)

@@ -11,7 +11,7 @@ this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
         model_params=dict(n_estimators=200,n_jobs=-1), #hyper-parameters
         model_id='L0XTC1',   # Model Identifier
-        feature_set='L0FS02'  # feature set to use
+        feature_set='KFS02'  # feature set to use
         )
 
 model_tracker = ModelPerformanceTracker(model_trainer=this_model)

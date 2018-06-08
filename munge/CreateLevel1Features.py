@@ -27,14 +27,14 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
         features = []
         for model_id in self.in_dir:
             train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
-                                          'models',
+                                          'data',
                                           model_id,
-                                          model_id+'_train_features.csv'))
+                                          'train.csv'))
 
             test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
-                                          'models',
+                                          'data',
                                           model_id,
-                                          model_id+'_test_features.csv'))
+                                          'test.csv'))
              
             features.append((train_df,test_df))
             
@@ -42,7 +42,7 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
     
     
 #%%
-fs = FeatureGeneratorNextLevel(in_dir=['L0RF1','L0NN1','L0XTC1'],
+fs = FeatureGeneratorNextLevel(in_dir=['ML0RF1','ML0NN1','ML0XTC1'],
                                out_dir='L1FS01')
 
 

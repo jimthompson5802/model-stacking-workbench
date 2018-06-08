@@ -186,6 +186,7 @@ class ModelTrainer():
         self.feature_set = feature_set
         self.train_ds = train_ds
         self.test_ds = test_ds
+        self.out_dir = "M"+model_id
         
         #
         # get global parameters 
@@ -193,31 +194,20 @@ class ModelTrainer():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
+        self.root_dir = self.CONFIG['ROOT_DIR']
+            
         print('Model training starting for {} with feature set {} at {:%Y-%m-%d %H:%M:%S}'\
               .format(self.model_id,self.feature_set,datetime.datetime.now()))
             
     def cleanPriorResults(self):
+        
+        # remove old 
         try:
-            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,
-                                   self.model_id+'_features.csv'))
+            shutil.rmtree(os.path.join(self.root_dir,'data',self.out_dir))
         except:
             pass
         
-        
-        try:    
-            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,
-                                   self.model_id+'_train_features.csv'))
-        except:
-            pass
-        
-        try:    
-            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,
-                                   self.model_id+'_test_features.csv'))
-        except:
-            pass
+        os.makedirs(os.path.join(self.root_dir,'data',self.out_dir))
         
         try:
             os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
@@ -232,6 +222,7 @@ class ModelTrainer():
                                    self.model_id+'_submission.csv'))
         except:
             pass
+        
             
     def createFeaturesForNextLevel(self):
         
@@ -303,9 +294,9 @@ class ModelTrainer():
         # combine the generated features into single dataframe & save to disk
         #
         pd.concat(next_level).sort_values(self.CONFIG['ID_VAR'])\
-            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                 self.model_id,
-                                 self.model_id+'_train_features.csv'),
+            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+                                 self.out_dir,
+                                 'train.csv'),
                     index=False)
 
 
@@ -366,9 +357,9 @@ class ModelTrainer():
         
         # save test predictions for next level
         pred_df = test_id.join(predictions).sort_values(self.CONFIG['ID_VAR'])
-        pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                    self.model_id,
-                                    self.model_id+'_test_features.csv'), index=False)
+        pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+                                    self.out_dir,
+                                    'test.csv'), index=False)
         
         # save Kaggle submission
         submission = test_id.join(predictions[self.model_id+'_1'])
