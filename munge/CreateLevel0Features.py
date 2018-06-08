@@ -22,7 +22,7 @@ with open('./config.yml') as f:
 #
 print("Preparing Level 0 Feature Set 1")
 
-fs = FeatureGenerator('raw','L0FS01')
+fs = FeatureGenerator('raw','KFS01')
 
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
@@ -40,7 +40,7 @@ fs.saveFeatureSet(X_train, y_train, X_test)
 #
 print("Preparing Level 0 Feature Set 2")
 
-fs = FeatureGenerator('raw','L0FS02')
+fs = FeatureGenerator('raw','KFS02')
 
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
@@ -65,7 +65,7 @@ fs.saveFeatureSet(X_train, y_train, X_test)
 #
 print("Preparing Level 0 Feature Set 3")
 
-fs = FeatureGenerator('raw','L0FS03')
+fs = FeatureGenerator('raw','KFS03')
 
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
