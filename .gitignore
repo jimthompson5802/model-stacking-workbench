@@ -5,3 +5,4 @@ data
 *.pkl
 results
 reports/.ipynb_checkpoints
+reports/illustrative_report
