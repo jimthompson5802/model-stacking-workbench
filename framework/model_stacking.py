@@ -487,3 +487,36 @@ class ModelPerformanceTracker():
         
            df.to_csv(self.tracking_file, mode='a', header=False, index=False)
         
+
+###
+#
+#  Class for blending models
+#
+###  
+class ModelBlender():
+    """
+    Methods to blend predictions from several models to derive a prediction set.
+    
+    WORK-IN-PROGRESS
+    
+    Arguments:
+
+    
+    """
+    
+    def __init__(self,
+                 model_id=None,    # model identifier
+                 blend_method='simple_average', #default blending method
+                 feature_set=None,  # feature set to use
+                 train_ds='train.csv',  # feature set training data set
+                 test_ds='test.csv'  # feature set test data set
+                 ):   
+        
+        self.model_id = model_id
+        self.blend_method = blend_method
+        self.feature_set=None
+        self.train_ds = 'train.csv'
+        self.test_ds = 'test.csv'
+        self.out_dir = "M"+model_id
+        
+        pass
