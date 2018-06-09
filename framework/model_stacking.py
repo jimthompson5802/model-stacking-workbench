@@ -166,8 +166,8 @@ class ModelTrainer():
         model_params: Python dictionary specifying parameters for the model.
         model_id: character string used to identify the model
         test_data_method: method for generating test data predictions
-                          Type1 - train model on all data to generate test data prediction
-                          Type2 - average test data predictions from k-fold training
+                          all_data_model - train model on all data to generate test data prediction
+                          k-fold_average_model - average test data predictions from k-fold training
         feature_set: Feature identifier used in FeatureGenerator
         train_ds: training data set
         test_ds: test data set
@@ -178,7 +178,7 @@ class ModelTrainer():
                  ModelClass=None,  #Model Algorithm
                  model_params={},  # Model hyper-parameters
                  model_id=None,    # model identifier
-                 test_prediction_method='Method1', #training method
+                 test_prediction_method='k-fold_average_model', #training method
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
                  test_ds='test.csv'  # feature set test data set
@@ -188,11 +188,12 @@ class ModelTrainer():
         self.model_params = model_params
         self.model_id = model_id
         
-        if test_prediction_method == 'Method1' or test_prediction_method == 'Method2':
+        if test_prediction_method == 'all_data_model' 
+                or test_prediction_method == 'k-fold_average_model':
             self.test_prediction_method = test_prediction_method
         else:
             raise ValueError("test_prediction_method=" + test_prediction_method 
-                             + ", valid vaules are 'Method1' or 'Method2'")
+                             + ", valid vaules are 'all_data_model' or 'k-fold_average_model'")
         
         self.feature_set = feature_set
         self.train_ds = train_ds
@@ -318,7 +319,7 @@ class ModelTrainer():
                     index=False)
        
         # method for handling test data
-        if self.test_prediction_method == 'Method1':
+        if self.test_prediction_method == 'all_data_model':
             #
             # train model on complete training data set
             #
@@ -347,7 +348,7 @@ class ModelTrainer():
         
         self.training_time = time.time() - start_training
 
-    def createKaggleSubmission(self,feature_set=None,test_ds='test.csv'):
+    def createTestPredictions(self,feature_set=None,test_ds='test.csv'):
         #
         # create Kaggle Submission
         #
@@ -391,9 +392,16 @@ class ModelTrainer():
         pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
                                     self.out_dir,
                                     'test.csv'), index=False)
-        
+ 
+
+    def createKaggleSubmission(self):
+        # retrieve test predictions
+        predictions = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+                                    self.out_dir,
+                                    'test.csv'))
+    
         # save Kaggle submission
-        submission = test_id.join(predictions[self.model_id+'_1'])
+        submission = predictions.loc[self.CONFIG['ID_VAR']].join(predictions[self.model_id+'_1'])
         submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
         
         submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
