@@ -188,7 +188,7 @@ class ModelTrainer():
         self.model_params = model_params
         self.model_id = model_id
         
-        if test_prediction_method == 'all_data_model' 
+        if test_prediction_method == 'all_data_model'\
                 or test_prediction_method == 'k-fold_average_model':
             self.test_prediction_method = test_prediction_method
         else:
@@ -305,7 +305,7 @@ class ModelTrainer():
             
             next_level.append(y_hat)
             
-            if self.test_prediction_method == 'Method2':
+            if self.test_prediction_method == 'k-fold_average_model':
                 models_list.append(model)
             
             
@@ -348,20 +348,20 @@ class ModelTrainer():
         
         self.training_time = time.time() - start_training
 
-    def createTestPredictions(self,feature_set=None,test_ds='test.csv'):
+    def createTestPredictions(self,test_ds='test.csv'):
         #
         # create Kaggle Submission
         #
         # Assumes:  trained model has been saved under "`model_id`_model.pkl"
         #
         
-        print('Starting createKaggleSubmission: {:%Y-%m-%d %H:%M:%S}'\
+        print('Starting createTestPredictions: {:%Y-%m-%d %H:%M:%S}'\
               .format(datetime.datetime.now()))
         
         with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
                                self.model_id+'_model.pkl'),'rb') as f:
             model = pickle.load(f)
-            
+
         # create data set to make predictions
         test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
                                            self.feature_set,self.test_ds))
@@ -376,7 +376,8 @@ class ModelTrainer():
         if isinstance(model,(list)):
             pred_list = []
             for m in model:
-                pred_list.append(m.predict_proba(test_df[predictors]))
+                y_hat = m.predict_proba(test_df[predictors])
+                pred_list.append(y_hat)
             
             preds = np.dstack(pred_list).mean(axis=2)
             predictions = pd.DataFrame(preds,index=test_df.index)
@@ -395,13 +396,16 @@ class ModelTrainer():
  
 
     def createKaggleSubmission(self):
+        print('Starting createKaggleSubmission: {:%Y-%m-%d %H:%M:%S}'\
+              .format(datetime.datetime.now()))
+        
         # retrieve test predictions
         predictions = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
                                     self.out_dir,
                                     'test.csv'))
     
         # save Kaggle submission
-        submission = predictions.loc[self.CONFIG['ID_VAR']].join(predictions[self.model_id+'_1'])
+        submission = predictions[self.CONFIG['ID_VAR']].join(predictions[self.model_id+'_1'])
         submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
         
         submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
