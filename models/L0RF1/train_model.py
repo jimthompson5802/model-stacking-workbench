@@ -9,8 +9,7 @@ from sklearn.ensemble import RandomForestClassifier as ThisModel
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(n_estimators=20,n_jobs=-1), #hyper-parameters
-        test_prediction_method='all_data_model',
+        model_params=dict(n_estimators=200,n_jobs=-1), #hyper-parameters
         model_id='L0RF1',   # Model Identifier
         feature_set='KFS02'  # feature set to use
         )

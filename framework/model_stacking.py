@@ -166,6 +166,7 @@ class ModelTrainer():
         model_params: Python dictionary specifying parameters for the model.
         model_id: character string used to identify the model
         test_data_method: method for generating test data predictions
+                          None - default, retrieve value from config.yml
                           all_data_model - train model on all data to generate test data prediction
                           k-fold_average_model - average test data predictions from k-fold training
         feature_set: Feature identifier used in FeatureGenerator
@@ -178,7 +179,7 @@ class ModelTrainer():
                  ModelClass=None,  #Model Algorithm
                  model_params={},  # Model hyper-parameters
                  model_id=None,    # model identifier
-                 test_prediction_method='k-fold_average_model', #training method
+                 test_prediction_method=None, #training method
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
                  test_ds='test.csv'  # feature set test data set
@@ -187,14 +188,7 @@ class ModelTrainer():
         self.ModelClass = ModelClass
         self.model_params = model_params
         self.model_id = model_id
-        
-        if test_prediction_method == 'all_data_model'\
-                or test_prediction_method == 'k-fold_average_model':
-            self.test_prediction_method = test_prediction_method
-        else:
-            raise ValueError("test_prediction_method=" + test_prediction_method 
-                             + ", valid vaules are 'all_data_model' or 'k-fold_average_model'")
-        
+        self.test_prediction_method = test_prediction_method
         self.feature_set = feature_set
         self.train_ds = train_ds
         self.test_ds = test_ds
@@ -207,9 +201,19 @@ class ModelTrainer():
             self.CONFIG = yaml.load(f.read())
             
         self.root_dir = self.CONFIG['ROOT_DIR']
+        
+        if self.test_prediction_method == None:
+            self.test_prediction_method = self.CONFIG['TEST_PREDICTION_METHOD']
+        elif test_prediction_method == 'all_data_model'\
+                or test_prediction_method == 'k-fold_average_model':
+            self.test_prediction_method = test_prediction_method
+        else:
+            raise ValueError("test_prediction_method=" + test_prediction_method 
+                             + ", valid vaules are 'all_data_model' or 'k-fold_average_model'")       
             
         print('Model training starting for {} with feature set {} at {:%Y-%m-%d %H:%M:%S}'\
               .format(self.model_id,self.feature_set,datetime.datetime.now()))
+        print('test_prediction_method: {}'.format(self.test_prediction_method))
             
     def cleanPriorResults(self):
         
@@ -441,7 +445,10 @@ class ModelPerformanceTracker():
                                cv_metric_list=None  # list of cv performance metrics
                                ):
         # retrieve basic model information from model trainer
-        model_params = str(self.model_trainer.model_params)
+        model_params = "{'model_params': " + str(self.model_trainer.model_params) \
+                + ", 'test_prediction_method': '" + self.model_trainer.test_prediction_method \
+                + "'}"
+        
         model_id = self.model_trainer.model_id
         feature_set = self.model_trainer.feature_set
         date_time = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())

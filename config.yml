@@ -18,3 +18,11 @@ TARGET_VAR: 'target'
 # Kaggle Submission Heaaders
 #
 KAGGLE_SUBMISSION_HEADERS: ['ID','PredictedProb']
+
+#
+# Method for generating test data set predictions
+#  Valid values:
+#     all_data_model
+#     k-fold_average_model
+#
+TEST_PREDICTION_METHOD: k-fold_average_model
