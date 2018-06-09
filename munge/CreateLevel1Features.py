@@ -42,7 +42,7 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
     
     
 #%%
-fs = FeatureGeneratorNextLevel(in_dir=['ML0RF1','ML0NN1','ML0XTC1'],
+fs = FeatureGeneratorNextLevel(in_dir=['ML0RF1','ML0NN1','ML0XTC1','ML0LOG1'],
                                out_dir='L1FS01')
 
 
