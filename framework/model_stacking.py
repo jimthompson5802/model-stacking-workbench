@@ -347,7 +347,8 @@ class ModelTrainer():
             self.training_rows = train_df.shape[0]
             self.training_columns = len(predictors)
             with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,self.model_id+'_model.pkl'),'wb') as f:
+                                   self.model_id,
+                                   self.model_id+'_model.pkl'),'wb') as f:
                 pickle.dump(models_list,f)            
         
         self.training_time = time.time() - start_training

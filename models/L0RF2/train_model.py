@@ -22,16 +22,15 @@ model_tracker = ModelPerformanceTracker(model_trainer=this_model)
 this_model.cleanPriorResults()
 
 #%%
-#
-# create features for the next level
-#
-this_model.createFeaturesForNextLevel()
-
 #%%
 #
 # train model on all the data
 #
 this_model.trainModel()
+
+#%%
+# create Test predictions
+this_model.createTestPredictions()
 
 #%%
 #
