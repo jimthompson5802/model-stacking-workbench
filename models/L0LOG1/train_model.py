@@ -9,7 +9,7 @@ from sklearn.linear_model import LogisticRegression as ThisModel
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(penalty='l1',C=10.0,random_state=13), #hyper-parameters
+        model_params=dict(penalty='l1',C=0.1,tol=1e-5,random_state=13), #hyper-parameters
         model_id='L0LOG1',   # Model Identifier
         feature_set='KFS04'  # feature set to use
         )
