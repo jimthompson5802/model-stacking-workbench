@@ -194,6 +194,9 @@ class ModelTrainer():
         self.test_ds = test_ds
         self.out_dir = "M"+model_id
         
+        # this implment fix to Issue #1
+        self.max_bytes = 2**31 - 1
+        
         #
         # get global parameters 
         #
@@ -214,6 +217,41 @@ class ModelTrainer():
         print('Model training starting for {} with feature set {} at {:%Y-%m-%d %H:%M:%S}'\
               .format(self.model_id,self.feature_set,datetime.datetime.now()))
         print('test_prediction_method: {}'.format(self.test_prediction_method))
+        
+     
+    # added to fix Issue #1
+    def _saveModelToDisk(self,model=None):
+        # convert to byte stream
+        bytes_out = pickle.dumps(model)
+        
+        # write out byte stream in chunks of size self.max_bytes
+        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+                               self.model_id,self.model_id+'_model.pkl'),'wb') as f:
+            for idx in range(0, len(bytes_out), self.max_bytes):
+                f.write(bytes_out[idx:idx+self.max_bytes])
+
+    # added to fix Issue #1
+    def _loadModelFromDisk(self):
+        
+        # initailize area to recieve file chunks
+        bytes_in = bytearray(0)
+        
+        # get total size of saved model file
+        model_file_name = os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
+                               self.model_id+'_model.pkl')
+        
+        input_size = os.path.getsize(model_file_name)
+        
+        # read in saved model in max_byte chunks
+        with open(model_file_name,'rb') as f:
+            for _ in range(0, input_size, self.max_bytes):
+                bytes_in += f.read(self.max_bytes) 
+        
+        # recreate model object
+        model = pickle.loads(bytes_in)   
+        
+        return model
+        
             
     def cleanPriorResults(self):
         
@@ -340,16 +378,12 @@ class ModelTrainer():
             model.fit(X_train,y_train)
 
             
-            with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,self.model_id+'_model.pkl'),'wb') as f:
-                pickle.dump(model,f)
+            self._saveModelToDisk(model)
+            
         else:
             self.training_rows = train_df.shape[0]
             self.training_columns = len(predictors)
-            with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
-                                   self.model_id,
-                                   self.model_id+'_model.pkl'),'wb') as f:
-                pickle.dump(models_list,f)            
+            self._saveModelToDisk(models_list)        
         
         self.training_time = time.time() - start_training
 
@@ -363,9 +397,7 @@ class ModelTrainer():
         print('Starting createTestPredictions: {:%Y-%m-%d %H:%M:%S}'\
               .format(datetime.datetime.now()))
         
-        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
-                               self.model_id+'_model.pkl'),'rb') as f:
-            model = pickle.load(f)
+        model = self._loadModelFromDisk()
 
         # create data set to make predictions
         test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
