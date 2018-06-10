@@ -17,5 +17,4 @@ for additional details.
 Any feedback will be appreciated.  Feel free to enter comments in this repo's 
 [Issues tab](https://github.com/jimthompson5802/model-stacking-workbench/issues).
 
-![Model Stacking Architecture](https://drive.google.com/open?id=15lyIMkkbe8qg9za9ASZgT93wdHYH4Xe9)
 
