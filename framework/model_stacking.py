@@ -62,23 +62,16 @@ class FeatureGenerator():
         in_dir: directory containing the input data set to transform to a 
                 feature set.
         out_dir: directory to contain the new feature set.
-        id_var: python list containing attribute(s) that are used to identify
-                the record.
-        target_var: name of the variable to be predicted
-    
+
     """    
     
     def __init__(self,
                  in_dir=None,  # directory containing input training/test data sets
-                 out_dir=None, # directory to contain generated feature set
-                 id_vars=['ID'],  # variables used to identify records
-                 target_var='target'  # target variable name
+                 out_dir=None # directory to contain generated feature set
                  ):
 
         self.in_dir = in_dir        
         self.out_dir = out_dir      
-        self.id_vars = id_vars      
-        self.target_var = target_var 
         self.__version__ = __version__
         
         #
@@ -88,6 +81,8 @@ class FeatureGenerator():
             self.CONFIG = yaml.load(f.read())
             
         self.root_dir = self.CONFIG['ROOT_DIR']
+        self.id_vars = self.CONFIG['ID_VAR']      
+        self.target_var = self.CONFIG['TARGET_VAR'] 
         
         self._makeOutputDirectory()
        
