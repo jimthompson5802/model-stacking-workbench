@@ -69,6 +69,7 @@ class FeatureGenerator():
         self.out_dir = out_dir      
         self.id_vars = id_vars      
         self.target_var = target_var 
+        self.__version__ = __version__
         
         #
         # get parameters 
@@ -195,6 +196,7 @@ class ModelTrainer():
         self.train_ds = train_ds
         self.test_ds = test_ds
         self.out_dir = "M"+model_id
+        self.__version__ = __version__
         
         # this implment fix to Issue #1
         self.max_bytes = 2**31 - 1
@@ -465,6 +467,7 @@ class ModelPerformanceTracker():
     
     def __init__(self,model_trainer=None):
         self.model_trainer = model_trainer
+        self.__version__ = __version__
         
         #
         # get global parameters 
