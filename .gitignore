@@ -1,8 +1,11 @@
+# Ignore
 .spyproject
 data
-*/__pycache__
+__pycache__
 *.csv
 *.pkl
 results
-reports/.ipynb_checkpoints
+.ipynb_checkpoints
 reports/illustrative_report
+
+# Allow
