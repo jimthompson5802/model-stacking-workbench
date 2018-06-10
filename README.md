@@ -1,8 +1,9 @@
 # Model Stacking Workbench
 
 ## Purpose
-This is a collection of Python modules that facilitate bilding "a predicitve
-model" using a generalized stacking approach.  This approach involves developing 
+This is a collection of Python modules that facilitate building "a predicitve
+model" for [Kaggle competitions](https://www.kaggle.com) using a generalized 
+model stacking approach.   This approach involves developing 
 several predictive models and combining predictions from those models into
 an overall prediction. Generally speaking the combination of predictions lead to
 a better performing model.
