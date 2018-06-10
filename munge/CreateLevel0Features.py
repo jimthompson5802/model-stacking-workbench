@@ -28,9 +28,19 @@ fs = FeatureGenerator('raw','KFS01')
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
 
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 X_train.fillna(-999,inplace=True)
 
 X_test.fillna(-999,inplace=True)
+
+
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 fs.saveFeatureSet(X_train, y_train, X_test)
 
@@ -46,6 +56,12 @@ fs = FeatureGenerator('raw','KFS02')
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
 
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 
 # find only numberic attributes
 numeric_predictors = [x for x in X_train.columns if X_train[x].dtype != 'O']
@@ -58,6 +74,9 @@ X_test = X_test.loc[:,numeric_predictors]
 X_test.fillna(-999,inplace=True)
 X_test.shape
 
+
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
+
 fs.saveFeatureSet(X_train, y_train, X_test)
 
 #%%
@@ -66,6 +85,19 @@ fs.saveFeatureSet(X_train, y_train, X_test)
 # one-hot encode categorical variables
 # scale numeric to [0,1]
 #
+
+fs = FeatureGenerator('raw','KFS03')
+
+# get raw data
+X_train, y_train, X_test = fs.getRawData()
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
+print("Preparing Level 0 Feature Set 3")
 
 # Keep at most this number of most number frequent unique factor levels
 TOP_CATEGORICAL_LEVELS = 10
@@ -76,12 +108,6 @@ MAX_CATEGORICAL_LEVELS = 100
 # Exclude these predictors from the baseline feature set
 PREDICTORS_TO_EXCLUDE = []
 
-print("Preparing Level 0 Feature Set 3")
-
-fs = FeatureGenerator('raw','KFS03')
-
-# get raw data
-X_train, y_train, X_test = fs.getRawData()
 
 print('Shape X_train: ',X_train.shape,", Shape X_test:",X_test.shape)
 
@@ -176,6 +202,7 @@ X_test_num = pd.DataFrame(mms.transform(imp.transform(X_test_num)),columns=num_p
 X_train_new = pd.concat([X_train_num,X_train_cat],axis=1)
 X_test_new = pd.concat([X_test_num,X_test_cat],axis=1)
 
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 # save new feature set
 fs.saveFeatureSet(X_train_new, y_train, X_test_new)
@@ -188,6 +215,17 @@ fs.saveFeatureSet(X_train_new, y_train, X_test_new)
 # Standardize Numeric variables
 #
 
+fs = FeatureGenerator('raw','KFS04')
+
+# get raw data
+X_train, y_train, X_test = fs.getRawData()
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 # Keep at most this number of most number frequent unique factor levels
 TOP_CATEGORICAL_LEVELS = 10
 
@@ -198,11 +236,6 @@ MAX_CATEGORICAL_LEVELS = 100
 PREDICTORS_TO_EXCLUDE = []
 
 print("Preparing Level 0 Feature Set 4")
-
-fs = FeatureGenerator('raw','KFS04')
-
-# get raw data
-X_train, y_train, X_test = fs.getRawData()
 
 print('Shape X_train: ',X_train.shape,", Shape X_test:",X_test.shape)
 
@@ -297,6 +330,7 @@ X_test_num = pd.DataFrame(ss.transform(imp.transform(X_test_num)),columns=num_pr
 X_train_new = pd.concat([X_train_num,X_train_cat],axis=1)
 X_test_new = pd.concat([X_test_num,X_test_cat],axis=1)
 
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 # save new feature set
 fs.saveFeatureSet(X_train_new, y_train, X_test_new)

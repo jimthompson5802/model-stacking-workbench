@@ -12,15 +12,25 @@ import numpy as np
 __version__ = '0.1'
 
 
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 from sklearn.metrics import log_loss
 ###
 #
 # function to calculate Kaggle performance metric during CV 
+# Must be customized for each competition
 #
 ###
 def calculateKaggleMetric(y=None,y_hat=None):
     return log_loss(y,y_hat)
 
+
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 ###
 #
@@ -436,6 +446,7 @@ class ModelTrainer():
                                     'test.csv'), index=False)
  
 
+
     def createKaggleSubmission(self):
         print('Starting createKaggleSubmission: {:%Y-%m-%d %H:%M:%S}'\
               .format(datetime.datetime.now()))
@@ -444,10 +455,18 @@ class ModelTrainer():
         predictions = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
                                     self.out_dir,
                                     'test.csv'))
+        
+        ##############################################################
+        #                                                            #
+        #          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+        #                                                            #
+        ##############################################################
     
         # save Kaggle submission
         submission = predictions[self.CONFIG['ID_VAR']].join(predictions[self.model_id+'_1'])
         submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
+        
+        ########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
         
         submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
                                        self.model_id,

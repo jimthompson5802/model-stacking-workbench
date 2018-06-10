@@ -23,6 +23,11 @@ print('root dir: ',CONFIG['ROOT_DIR'])
 #
 class FeatureGeneratorNextLevel(FeatureGenerator):
     
+    #
+    # override getRawData() method to handle retrieval of prior
+    # model predictions
+    #
+    
     def getRawData(self):
         features = []
         for model_id in self.in_dir:
@@ -42,6 +47,9 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
 
     
 #%%
+#
+#  Specify location for prior model predictions
+#
 fs = FeatureGeneratorNextLevel(in_dir=['ML1NN1','ML1RF1'],
                                out_dir='L2FS01')
 
@@ -54,6 +62,13 @@ fs = FeatureGeneratorNextLevel(in_dir=['ML1NN1','ML1RF1'],
 features = fs.getRawData()
 
 #%%
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 #
 # Assemble train and test data sets for next Level
 #
@@ -71,6 +86,7 @@ for t in features:
     else:
         X_train_df = X_train_df.join(t[0].iloc[:,3])
         X_test_df = X_test_df.join(t[1].iloc[:,2])
-        
+
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########     
 #%%
 fs.saveFeatureSet(X_train_df,y_train_df,X_test_df)

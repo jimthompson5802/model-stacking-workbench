@@ -36,6 +36,13 @@ fs = FeatureGenerator('raw','KFSBSLN')
 # get raw data
 X_train, y_train, X_test = fs.getRawData()
 
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
 print('Shape X_train: ',X_train.shape,", Shape X_test:",X_test.shape)
 
 training_rows = X_train.shape[0]
@@ -130,6 +137,8 @@ X_test_new = pd.concat([X_test_num,X_test_cat],axis=1)
 
 
 print('Shape X_train_new: ',X_train_new.shape,", Shape X_test_new:",X_test_new.shape)
+
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 fs.saveFeatureSet(X_train_new, y_train, X_test_new)
 #%%

@@ -17,11 +17,17 @@ with open('./config.yml') as f:
     
 print('root dir: ',CONFIG['ROOT_DIR'])
 
+
 #%%
 #
 # Define Feature Generator for Level 1
 #
 class FeatureGeneratorNextLevel(FeatureGenerator):
+    
+    #
+    # override getRawData() method to handle retrieval of prior
+    # model predictions
+    #
     
     def getRawData(self):
         features = []
@@ -42,6 +48,9 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
     
     
 #%%
+#
+#  Specify location for prior model predictions
+#
 fs = FeatureGeneratorNextLevel(in_dir=['ML0RF1','ML0NN1','ML0XTC1','ML0LOG1'],
                                out_dir='L1FS01')
 
@@ -53,7 +62,19 @@ fs = FeatureGeneratorNextLevel(in_dir=['ML0RF1','ML0NN1','ML0XTC1','ML0LOG1'],
 # this is a list of tuples.  Each tuple structure: (train_df, test_df)
 features = fs.getRawData()
 
+
+
+
+
 #%%
+
+##############################################################
+#                                                            #
+#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
+#                                                            #
+##############################################################
+
+
 #
 # Assemble train and test data sets for next Level
 #
@@ -72,5 +93,8 @@ for t in features:
         X_train_df = X_train_df.join(t[0].iloc[:,3])
         X_test_df = X_test_df.join(t[1].iloc[:,2])
         
+        
+########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
+
 #%%
 fs.saveFeatureSet(X_train_df,y_train_df,X_test_df)
