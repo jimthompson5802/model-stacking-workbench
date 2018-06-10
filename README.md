@@ -14,5 +14,6 @@ xgboost, TensorFlow, and R.
 See [project wiki](https://github.com/jimthompson5802/model-stacking-workbench/wiki) 
 for additional details.
 
-Any feedback will be appreciated.  Feel free to enter comments in this repo's Issues tab.
+Any feedback will be appreciated.  Feel free to enter comments in this repo's 
+[Issues tab](https://github.com/jimthompson5802/model-stacking-workbench/issues).
 
