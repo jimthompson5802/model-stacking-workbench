@@ -1,7 +1,5 @@
 # Model Stacking Workbench
 
-# WORK-IN-PROGRESS
-
 ## Purpose
 This is a collection of Python modules that facilitate bilding "a predicitve
 model" using a generalized stacking approach.  This approach involves developing 
