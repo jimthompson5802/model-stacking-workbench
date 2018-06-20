@@ -1,7 +1,34 @@
 #
+# Configuration file for classification model example
+#
+
+#
+# Problem type
+#
+#  Valid values: 'classification' or 'regression'
+PROBLEM_TYPE: 'classification'
+
+#
 # base directory for model building
 #
 ROOT_DIR: '.'
+
+#
+# Directory Structures
+#
+
+# location of model files
+MODEL_DIR: 'models'
+
+# directory for data feature sets
+DATA_DIR: 'data'
+
+# location of model results tracker file
+RESULTS_DIR: 'results'
+
+# location for python scripts to create feature sets
+MUNGE_DIR: 'munge'
+
 
 #
 # variablses that serve as identifiers

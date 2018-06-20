@@ -30,11 +30,23 @@ PREDICTORS_TO_EXCLUDE = []
 # Baseline Feature Set
 #
 print("Preparing Baseline Feature Set")
+comment = """
+Baseline feature set
 
-fs = FeatureGenerator('raw','KFSBSLN')
+Missing values: Median imputation
+
+One hot encoding of categorical variables
+
+Categorical variables with moe than 100 levels are exclueded.
+Keep only top 10 levels, remaining are set as Others
+
+
+"""
+
+fs = FeatureGenerator('raw','KFSBSLN',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData()
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', test_ds='test.csv')
 
 
 ##############################################################
@@ -141,6 +153,8 @@ print('Shape X_train_new: ',X_train_new.shape,", Shape X_test_new:",X_test_new.s
 ########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 fs.saveFeatureSet(X_train_new, y_train, X_test_new)
+
+print('Completed creating feature set')
 #%%
 
 

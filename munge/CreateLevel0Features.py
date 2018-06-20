@@ -5,9 +5,8 @@ from sklearn.preprocessing import StandardScaler
 
 #%%
 import yaml
-import os.path 
 import pandas as pd
-import numpy as np
+
 
 
 #%%
@@ -23,10 +22,16 @@ with open('./config.yml') as f:
 #
 print("Preparing Level 0 Feature Set 1")
 
-fs = FeatureGenerator('raw','KFS01')
+comment="""
+all attributes in train and test data set.
+missing values set to -999
+"""
+
+fs = FeatureGenerator('raw','KFS01',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData()
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', 
+                                         test_ds='test.csv')
 
 
 ##############################################################
@@ -50,11 +55,15 @@ fs.saveFeatureSet(X_train, y_train, X_test)
 # feature set 2
 #
 print("Preparing Level 0 Feature Set 2")
+comment="""
+Only numeric features in train and test data set.
+missing values set to -999
+"""
 
-fs = FeatureGenerator('raw','KFS02')
+fs = FeatureGenerator('raw','KFS02',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData()
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', test_ds='test.csv')
 
 ##############################################################
 #                                                            #
@@ -80,16 +89,18 @@ X_test.shape
 fs.saveFeatureSet(X_train, y_train, X_test)
 
 #%%
+comment = """
 #
 # feature set 3 - suitable for nerual network
 # one-hot encode categorical variables
 # scale numeric to [0,1]
 #
+"""
 
-fs = FeatureGenerator('raw','KFS03')
+fs = FeatureGenerator('raw','KFS03',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData()
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', test_ds='test.csv')
 
 ##############################################################
 #                                                            #
@@ -209,16 +220,18 @@ fs.saveFeatureSet(X_train_new, y_train, X_test_new)
 
 
 #%%
+comment="""
 #
 # feature set 4 - suitable for nerual network
 # one-hot encode categorical variables
 # Standardize Numeric variables
 #
+"""
 
-fs = FeatureGenerator('raw','KFS04')
+fs = FeatureGenerator('raw','KFS04',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData()
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', test_ds='test.csv')
 
 ##############################################################
 #                                                            #

@@ -9,7 +9,7 @@ import datetime
 import time
 import numpy as np
 
-__version__ = '0.1'
+__version__ = '0.2.0'
 
 
 
@@ -67,11 +67,15 @@ class FeatureGenerator():
     
     def __init__(self,
                  in_dir=None,  # directory containing input training/test data sets
-                 out_dir=None # directory to contain generated feature set
+                 out_dir=None, # directory to contain generated feature set
+                 compress_feature_set=True,
+                 comment=""
                  ):
 
         self.in_dir = in_dir        
-        self.out_dir = out_dir      
+        self.out_dir = out_dir
+        self.compress_feature_set = compress_feature_set
+        self.comment = comment
         self.__version__ = __version__
         
         #
@@ -81,8 +85,12 @@ class FeatureGenerator():
             self.CONFIG = yaml.load(f.read())
             
         self.root_dir = self.CONFIG['ROOT_DIR']
+        self.data_dir = self.CONFIG['DATA_DIR']
         self.id_vars = self.CONFIG['ID_VAR']      
         self.target_var = self.CONFIG['TARGET_VAR'] 
+        self.compress_feature_set = compress_feature_set
+        self.comment = comment
+        
         
         self._makeOutputDirectory()
        
@@ -90,14 +98,14 @@ class FeatureGenerator():
         #create directory to hold feature set
         # clean out out_dir
         try:
-            shutil.rmtree(os.path.join(self.root_dir,'data',self.out_dir))
+            shutil.rmtree(os.path.join(self.root_dir,self.data_dir,self.out_dir))
         except:
             pass
         
-        os.makedirs(os.path.join(self.root_dir,'data',self.out_dir))
+        os.makedirs(os.path.join(self.root_dir,self.data_dir,self.out_dir))
     
     
-    def getRawData(self):
+    def getRawData(self,train_ds='train.csv.gz',test_ds='test.csv.gz'):
         """
         default behaviour - can be overridden for different raw data structures
 
@@ -110,7 +118,7 @@ class FeatureGenerator():
             raw_train_target_df: dataframe containing target variable transform
             raw_test_features_df: dataframe containing test predictors to transform
         """
-        df = pd.read_csv(os.path.join(self.root_dir,'data',self.in_dir,'train.csv'))
+        df = pd.read_csv(os.path.join(self.root_dir,self.data_dir,self.in_dir,train_ds))
         
         # split data into identifiers, predictors and target data frames
         self.raw_train_id_df = df.loc[:,self.id_vars]
@@ -123,7 +131,7 @@ class FeatureGenerator():
         raw_train_features_df = df.loc[:,predictors]
         
         # get test data set
-        df = pd.read_csv(os.path.join(self.root_dir,'data',self.in_dir,'test.csv'))
+        df = pd.read_csv(os.path.join(self.root_dir,self.data_dir,self.in_dir,test_ds))
         self.raw_test_id_df = df.loc[:,self.id_vars]
         raw_test_features_df = df.loc[:,predictors]
         
@@ -146,16 +154,32 @@ class FeatureGenerator():
             new_train_target_df:  dataframe containing transformed target variable
             new_test_features_df: dataframe containing tarnsformed test predictors
         """
+        
+        if self.compress_feature_set:
+            train_ds = 'train.csv.gz'
+            test_ds = 'test.csv.gz'
+            compression_parm = 'gzip'
+        else:
+            train_ds = 'train.csv'
+            test_ds = 'test.csv'
+            compression_parm = None
+        
 
         self.raw_train_id_df.join(new_train_target_df)\
             .join(new_train_features_df)\
             .sort_values(self.id_vars)\
-            .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'train.csv'),index=False)
+            .to_csv(os.path.join(self.root_dir,self.data_dir,self.out_dir,train_ds),
+                    index=False,compression=compression_parm)
         
         self.raw_test_id_df\
             .join(new_test_features_df)\
             .sort_values(self.id_vars)\
-            .to_csv(os.path.join(self.root_dir,'data',self.out_dir,'test.csv'),index=False)
+            .to_csv(os.path.join(self.root_dir,self.data_dir,self.out_dir,test_ds),
+                    index=False,compression=compression_parm)
+            
+        if len(self.comment) > 0:
+            with open(os.path.join(self.root_dir,self.data_dir,self.out_dir,'README.txt'),'w') as f:
+                f.write(self.comment)
  
 ###
 #
@@ -190,7 +214,8 @@ class ModelTrainer():
                  test_prediction_method=None, #training method
                  feature_set=None,  # feature set to use
                  train_ds='train.csv',  # feature set training data set
-                 test_ds='test.csv'  # feature set test data set
+                 test_ds='test.csv',  # feature set test data set
+                 compress_output=True  # compress genrated output
                  ):   
         
         self.ModelClass = ModelClass
@@ -200,8 +225,19 @@ class ModelTrainer():
         self.feature_set = feature_set
         self.train_ds = train_ds
         self.test_ds = test_ds
+        self.compress_output = compress_output
         self.out_dir = "M"+model_id
         self.__version__ = __version__
+        
+        if self.compress_output:
+            self.out_train_ds = 'train.csv.gz'
+            self.out_test_ds = 'test.csv.gz'
+            self.compression_parm = 'gzip'
+        else:
+            self.out_train_ds = 'train.csv'
+            self.out_test_ds = 'test.csv'
+            self.compression_parm = None
+            
         
         # this implment fix to Issue #1
         self.max_bytes = 2**31 - 1
@@ -213,6 +249,8 @@ class ModelTrainer():
             self.CONFIG = yaml.load(f.read())
             
         self.root_dir = self.CONFIG['ROOT_DIR']
+        self.data_dir = self.CONFIG['DATA_DIR']
+        self.model_dir = self.CONFIG['MODEL_DIR']
         
         if self.test_prediction_method == None:
             self.test_prediction_method = self.CONFIG['TEST_PREDICTION_METHOD']
@@ -234,7 +272,7 @@ class ModelTrainer():
         bytes_out = pickle.dumps(model)
         
         # write out byte stream in chunks of size self.max_bytes
-        with open(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+        with open(os.path.join(self.root_dir,self.model_dir,
                                self.model_id,self.model_id+'_model.pkl'),'wb') as f:
             for idx in range(0, len(bytes_out), self.max_bytes):
                 f.write(bytes_out[idx:idx+self.max_bytes])
@@ -246,7 +284,7 @@ class ModelTrainer():
         bytes_in = bytearray(0)
         
         # get total size of saved model file
-        model_file_name = os.path.join(self.CONFIG['ROOT_DIR'],'models',self.model_id,
+        model_file_name = os.path.join(self.root_dir,self.model_dir,self.model_id,
                                self.model_id+'_model.pkl')
         
         input_size = os.path.getsize(model_file_name)
@@ -266,21 +304,21 @@ class ModelTrainer():
         
         # remove old 
         try:
-            shutil.rmtree(os.path.join(self.root_dir,'data',self.out_dir))
+            shutil.rmtree(os.path.join(self.root_dir,self.data_dir,self.out_dir))
         except:
             pass
         
-        os.makedirs(os.path.join(self.root_dir,'data',self.out_dir))
+        os.makedirs(os.path.join(self.root_dir,self.data_dir,self.out_dir))
         
         try:
-            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+            os.remove(os.path.join(self.root_dir,self.model_dir,
                                    self.model_id,
                                    self.model_id+'_model.pkl'))
         except:
             pass
         
         try:
-            os.remove(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+            os.remove(os.path.join(self.root_dir,self.model_dir,
                                    self.model_id,
                                    self.model_id+'_submission.csv'))
         except:
@@ -305,7 +343,7 @@ class ModelTrainer():
         #
         
         # retrieve training data
-        train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+        train_df = pd.read_csv(os.path.join(self.root_dir,self.data_dir,
                                             self.feature_set,self.train_ds))
         
         predictors = sorted(list(set(train_df.columns) - 
@@ -346,7 +384,15 @@ class ModelTrainer():
             
             # make preduction on hold out set to calculate metric and generate
             # features for next level of stack
-            y_hat = model.predict_proba(X_holdout)
+            if self.CONFIG['PROBLEM_TYPE'] == 'classification':
+                y_hat = model.predict_proba(X_holdout)
+            elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
+                y_hat = model.predict(X_holdout)
+            else:
+               raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
+                                + self.CONFIG['PROBLEM_TYPE'] 
+                             + ", valid vaules are 'classification' or 'regression'")  
+                
             self.cv_performance_metric.append(calculateKaggleMetric(y_holdout,y_hat))
         
             # geneate features for next level
@@ -364,10 +410,10 @@ class ModelTrainer():
         # combine the generated features into single dataframe & save to disk
         #
         pd.concat(next_level).sort_values(self.CONFIG['ID_VAR'])\
-            .to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+            .to_csv(os.path.join(self.root_dir,self.data_dir,
                                  self.out_dir,
-                                 'train.csv'),
-                    index=False)
+                                 self.out_train_ds),
+                    index=False, compression=self.compression_parm)
        
         # method for handling test data
         if self.test_prediction_method == 'all_data_model':
@@ -396,7 +442,7 @@ class ModelTrainer():
         
         self.training_time = time.time() - start_training
 
-    def createTestPredictions(self,test_ds='test.csv'):
+    def createTestPredictions(self,test_ds='test.csv.gz'):
         #
         # create Kaggle Submission
         #
@@ -409,7 +455,7 @@ class ModelTrainer():
         model = self._loadModelFromDisk()
 
         # create data set to make predictions
-        test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+        test_df = pd.read_csv(os.path.join(self.root_dir,self.data_dir,
                                            self.feature_set,self.test_ds))
         
         predictors = sorted(list(set(test_df.columns) - 
@@ -422,23 +468,41 @@ class ModelTrainer():
         if isinstance(model,(list)):
             pred_list = []
             for m in model:
-                y_hat = m.predict_proba(test_df[predictors])
+                if self.CONFIG['PROBLEM_TYPE'] == 'classification':
+                    y_hat = m.predict_proba(test_df[predictors])
+                elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
+                    y_hat = m.predict(test_df[predictors])
+                else:
+                   raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
+                                    + self.CONFIG['PROBLEM_TYPE'] 
+                                 + ", valid vaules are 'classification' or 'regression'")  
+
                 pred_list.append(y_hat)
             
             preds = np.dstack(pred_list).mean(axis=2)
             predictions = pd.DataFrame(preds,index=test_df.index)
                 
         else:
-            predictions = pd.DataFrame(model.predict_proba(test_df[predictors]),index=test_df.index)
+            if self.CONFIG['PROBLEM_TYPE'] == 'classification':
+                y_hat = model.predict_proba(test_df[predictors])
+            elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
+                y_hat = model.predict(test_df[predictors])
+            else:
+               raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
+                                + self.CONFIG['PROBLEM_TYPE'] 
+                             + ", valid vaules are 'classification' or 'regression'")        
+               
+            predictions = pd.DataFrame(y_hat,index=test_df.index)
             
         predictions.columns = [self.model_id+'_'+str(x) for x in list(predictions.columns)]
         
 
         # save test predictions for next level
         pred_df = test_id.join(predictions).sort_values(self.CONFIG['ID_VAR'])
-        pred_df.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+        pred_df.to_csv(os.path.join(self.root_dir,self.data_dir,
                                     self.out_dir,
-                                    'test.csv'), index=False)
+                                    self.out_test_ds), 
+               index=False,compression=self.compression_parm)
  
 
 
@@ -447,9 +511,9 @@ class ModelTrainer():
               .format(datetime.datetime.now()))
         
         # retrieve test predictions
-        predictions = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],'data',
+        predictions = pd.read_csv(os.path.join(self.root_dir,self.data_dir,
                                     self.out_dir,
-                                    'test.csv'))
+                                    self.out_test_ds))
         
         ##############################################################
         #                                                            #
@@ -463,7 +527,7 @@ class ModelTrainer():
         
         ########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
         
-        submission.to_csv(os.path.join(self.CONFIG['ROOT_DIR'],'models',
+        submission.to_csv(os.path.join(self.root_dir,self.model_dir,
                                        self.model_id,
                                        self.model_id+'_submission.csv'),index=False)
         
