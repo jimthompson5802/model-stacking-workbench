@@ -9,28 +9,10 @@ import datetime
 import time
 import numpy as np
 
+from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
+
 __version__ = '0.2.0'
 
-
-
-##############################################################
-#                                                            #
-#          CUSTOMIZE FOR KAGGLE COMPETITION                  #
-#                                                            #
-##############################################################
-
-from sklearn.metrics import log_loss
-###
-#
-# function to calculate Kaggle performance metric during CV 
-# Must be customized for each competition
-#
-###
-def calculateKaggleMetric(y=None,y_hat=None):
-    return log_loss(y,y_hat)
-
-
-########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
 ###
 #
@@ -213,8 +195,8 @@ class ModelTrainer():
                  model_id=None,    # model identifier
                  test_prediction_method=None, #training method
                  feature_set=None,  # feature set to use
-                 train_ds='train.csv',  # feature set training data set
-                 test_ds='test.csv',  # feature set test data set
+                 train_ds='train.csv.gz',  # feature set training data set
+                 test_ds='test.csv.gz',  # feature set test data set
                  compress_output=True  # compress genrated output
                  ):   
         
@@ -515,17 +497,9 @@ class ModelTrainer():
                                     self.out_dir,
                                     self.out_test_ds))
         
-        ##############################################################
-        #                                                            #
-        #          CUSTOMIZE FOR KAGGLE COMPETITION                  #
-        #                                                            #
-        ##############################################################
-    
-        # save Kaggle submission
-        submission = predictions[self.CONFIG['ID_VAR']].join(predictions[self.model_id+'_1'])
-        submission.columns = self.CONFIG['KAGGLE_SUBMISSION_HEADERS']
-        
-        ########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
+
+        submission = formatKaggleSubmission(predictions,self.model_id)
+
         
         submission.to_csv(os.path.join(self.root_dir,self.model_dir,
                                        self.model_id,
