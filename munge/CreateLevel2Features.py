@@ -34,12 +34,12 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
             train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
                                           'data',
                                           model_id,
-                                          'train.csv'))
+                                          'train.csv.gz'))
 
             test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
                                           'data',
                                           model_id,
-                                          'test.csv'))
+                                          'test.csv.gz'))
              
             features.append((train_df,test_df))
             
