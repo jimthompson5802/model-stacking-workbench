@@ -9,9 +9,20 @@ import datetime
 import time
 import numpy as np
 
-from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
+#from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
 
 __version__ = '0.2.0'
+
+#
+# locate user specified Kaggle competition specifiction fuctions
+#    calculateKaggleMetric: calculates contest metric from (y and y_hat)
+#    formatKaggleSubmission: creates Kaggle submission from test data set predicitons
+#
+with open('./config.yml') as f:
+    CONFIG = yaml.load(f.read())
+    with open(os.path.join(CONFIG['ROOT_DIR'],'kaggle_user_functions.py'),'r') as g:
+        exec(g.read())
+
 
 
 ###
