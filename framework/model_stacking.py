@@ -381,7 +381,7 @@ class ModelTrainer():
             if self.CONFIG['PROBLEM_TYPE'] == 'classification':
                 y_hat = model.predict_proba(X_holdout)
             elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
-                y_hat = model.predict(X_holdout)
+                y_hat = model.predict(X_holdout).reshape(-1,1)
             else:
                raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
                                 + self.CONFIG['PROBLEM_TYPE'] 
@@ -480,7 +480,7 @@ class ModelTrainer():
             if self.CONFIG['PROBLEM_TYPE'] == 'classification':
                 y_hat = model.predict_proba(test_df[predictors])
             elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
-                y_hat = model.predict(test_df[predictors])
+                y_hat = model.predict(test_df[predictors]).reshape(-1,1)
             else:
                raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
                                 + self.CONFIG['PROBLEM_TYPE'] 
