@@ -24,7 +24,7 @@ print('root dir: ',CONFIG['ROOT_DIR'])
 #%%
 # retreive raw training data
 train_df = pd.read_csv(os.path.join(CONFIG['ROOT_DIR'],
-                                    CONFIG['DATA_DIR'],'raw','train.csv'))
+                                    CONFIG['DATA_DIR'],'raw','train.csv.gz'))
 
 
 #%%

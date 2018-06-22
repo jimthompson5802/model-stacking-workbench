@@ -46,7 +46,7 @@ Keep only top 10 levels, remaining are set as Others
 fs = FeatureGenerator('raw','KFSBSLN',comment=comment)
 
 # get raw data
-X_train, y_train, X_test = fs.getRawData(train_ds='train.csv', test_ds='test.csv')
+X_train, y_train, X_test = fs.getRawData(train_ds='train.csv.gz', test_ds='test.csv.gz')
 
 
 ##############################################################
@@ -147,6 +147,7 @@ X_test_num = pd.DataFrame(imp.transform(X_test_num),columns=num_predictors)
 X_train_new = pd.concat([X_train_num,X_train_cat],axis=1)
 X_test_new = pd.concat([X_test_num,X_test_cat],axis=1)
 
+y_train_new = np.log(y_train + 1)
 
 print('Shape X_train_new: ',X_train_new.shape,", Shape X_test_new:",X_test_new.shape)
 
