@@ -465,12 +465,12 @@ class ModelTrainer():
                 if self.CONFIG['PROBLEM_TYPE'] == 'classification':
                     y_hat = m.predict_proba(test_df[predictors])
                 elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
-                    y_hat = m.predict(test_df[predictors])
+                    y_hat = m.predict(test_df[predictors]).reshape(-1,1)
                 else:
                    raise ValueError("Invalid value for configuration parameter PROBLEM_TYPE: " 
                                     + self.CONFIG['PROBLEM_TYPE'] 
                                  + ", valid vaules are 'classification' or 'regression'")  
-
+                   
                 pred_list.append(y_hat)
             
             preds = np.dstack(pred_list).mean(axis=2)
@@ -509,7 +509,7 @@ class ModelTrainer():
                                     self.out_dir,
                                     self.out_test_ds))
         
-
+        print('predictions.shape {}'.format(predictions.shape))
         submission = formatKaggleSubmission(predictions,self.model_id)
 
         
@@ -589,4 +589,3 @@ class ModelPerformanceTracker():
         
            df.to_csv(self.tracking_file, mode='a', header=False, index=False)
         
-

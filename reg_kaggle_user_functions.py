@@ -41,7 +41,7 @@ def formatKaggleSubmission(predictions,model_id):
         CONFIG = yaml.load(f.read())
     
     
-    submission = predictions[CONFIG['ID_VAR']].join(predictions[model_id+'_1'])
+    submission = predictions[CONFIG['ID_VAR']].join(predictions[model_id+'_0'])
     submission.columns = CONFIG['KAGGLE_SUBMISSION_HEADERS']
         
     return submission
