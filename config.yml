@@ -18,17 +18,16 @@ ROOT_DIR: '.'
 #
 
 # location of model files
-MODEL_DIR: 'models_clf'
+MODEL_DIR: 'clf_models'
 
 # directory for data feature sets
-DATA_DIR: 'data_clf'
+DATA_DIR: 'clf_data'
 
 # location of model results tracker file
-RESULTS_DIR: 'results_clf'
+RESULTS_DIR: 'clf_results'
 
 # location for python scripts to create feature sets
-MUNGE_DIR: 'munge_clf
-'
+MUNGE_DIR: 'clf_munge'
 
 
 #
