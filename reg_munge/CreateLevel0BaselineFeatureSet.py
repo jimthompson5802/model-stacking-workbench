@@ -153,7 +153,7 @@ print('Shape X_train_new: ',X_train_new.shape,", Shape X_test_new:",X_test_new.s
 
 ########### END OF KAGGLE COMPETITION CUSTOMIZATION #########
 
-fs.saveFeatureSet(X_train_new, y_train, X_test_new)
+fs.saveFeatureSet(X_train_new, y_train_new, X_test_new)
 
 print('Completed creating feature set')
 #%%
