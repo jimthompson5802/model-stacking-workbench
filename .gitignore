@@ -1,10 +1,13 @@
 # Ignore
 .spyproject
-data
+data_clf
+data_reg
 __pycache__
 *.csv
+*.csv.gz
 *.pkl
-results
+results_clf
+results_reg
 .ipynb_checkpoints
 reports/illustrative_report
 
