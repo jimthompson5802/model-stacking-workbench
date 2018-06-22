@@ -35,7 +35,7 @@ MUNGE_DIR: 'clf_munge'
 #   calculateKaggleMetric
 #   formatKaggleSubmission
 #
-KAGGLE_CONTEST_FUNCTIONS:  'kaggle_user_functions_clf.py'
+KAGGLE_CONTEST_FUNCTIONS:  'clf_kaggle_user_functions.py'
 
 
 #
