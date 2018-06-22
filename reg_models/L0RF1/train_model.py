@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestRegressor as ThisModel
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(n_estimators=20,n_jobs=-1), #hyper-parameters
+        model_params=dict(n_estimators=200,n_jobs=-1), #hyper-parameters
         model_id='L0RF1',   # Model Identifier
         feature_set='KFSBSLN'  # feature set to use
         )
