@@ -509,7 +509,6 @@ class ModelTrainer():
                                     self.out_dir,
                                     self.out_test_ds))
         
-        print('predictions.shape {}'.format(predictions.shape))
         submission = formatKaggleSubmission(predictions,self.model_id)
 
         
