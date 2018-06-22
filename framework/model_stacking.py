@@ -20,7 +20,8 @@ __version__ = '0.2.0'
 #
 with open('./config.yml') as f:
     CONFIG = yaml.load(f.read())
-    with open(os.path.join(CONFIG['ROOT_DIR'],'kaggle_user_functions.py'),'r') as g:
+    kaggle_functions_file = CONFIG['KAGGLE_CONTEST_FUNCTIONS']
+    with open(os.path.join(CONFIG['ROOT_DIR'],kaggle_functions_file),'r') as g:
         exec(g.read())
 
 
@@ -327,7 +328,7 @@ class ModelTrainer():
         #
         # retrieve KFold specifiction
         #
-        with open(os.path.join(self.CONFIG['ROOT_DIR'],'data','k-fold_specification.pkl'),'rb') as f:
+        with open(os.path.join(self.root_dir,self.data_dir,'k-fold_specification.pkl'),'rb') as f:
             k_folds = pickle.load(f)
             
          
@@ -538,7 +539,7 @@ class ModelPerformanceTracker():
         with open('./config.yml') as f:
             self.CONFIG = yaml.load(f.read())
             
-        self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],'results','model_performance_data.csv')
+        self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],CONFIG['RESULTS_DIR'],'model_performance_data.csv')
         
         
     
