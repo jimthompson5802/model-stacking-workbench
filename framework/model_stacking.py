@@ -375,6 +375,12 @@ class ModelTrainer():
         except:
             pass
         
+        try:
+            os.remove(os.path.join(self.root_dir,self.model_dir,
+                                   self.model_id,
+                                   'executed_train_model.ipynb'))
+        except:
+            pass
             
 
     def trainModel(self):
