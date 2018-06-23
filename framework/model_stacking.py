@@ -9,6 +9,9 @@ import datetime
 import time
 import numpy as np
 
+import nbformat
+from nbconvert.preprocessors import ExecutePreprocessor
+
 #from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
 __version__ = '0.2.0'
 
@@ -26,13 +29,13 @@ def getConfigParameters():
     
     try:
         file_name = os.environ['MSW_CONFIG_FILE']
-        print("retrieving config file from MSW_CONFIG_FILE environment variable")
+        source_of_config_file = 'environment variable MSW_CONFIG_FILE'
     except KeyError:
-        print("Retrieving config.yml file from current working directory")
+        source_of_config_file = 'current working directory'
         file_name = 'config.yml'
          
     if not _loaded_config_file:
-        print('retrieving parameters from configuration file: {}'.format(file_name))
+        print('retrieving configuration file: {} from {}'.format(file_name,source_of_config_file))
         _loaded_config_file = True
         
     
@@ -54,6 +57,31 @@ kaggle_functions_file = CONFIG['KAGGLE_CONTEST_FUNCTIONS']
 with open(os.path.join(CONFIG['ROOT_DIR'],kaggle_functions_file),'r') as g:
     exec(g.read())
 
+
+
+#
+# Function to execute a Jupyter notebook
+#
+def runJupyterNotebook(directory=None, notebook_name=None,
+                       python_kernel='python3',
+                       cell_timeout=600):
+    #
+    # direcotry: path specification for notebook working directory
+    # notebook: name of notebook to run
+    #
+    
+    # retrieve notebook contents
+    with open(os.path.join(directory,notebook_name)) as f:
+        nb = nbformat.read(f, as_version=4)
+
+    
+    # run the notebook
+    ep = ExecutePreprocessor(timeout=cell_timeout, kernel_name=python_kernel)
+    ep.preprocess(nb, {'metadata': {'path': directory}})
+    
+    # save output from notebook execution
+    with open(os.path.join(directory,'executed_'+notebook_name), 'wt') as f:
+        nbformat.write(nb, f)    
 
 
 ###
