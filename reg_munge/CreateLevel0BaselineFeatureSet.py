@@ -30,7 +30,7 @@ Baseline feature set
 
 Missing values: Median imputation
 
-One hot encoding of categorical variables
+Numeric encoding of categorical variables
 
 Categorical variables with moe than 100 levels are exclueded.
 Keep only top 10 levels, remaining are set as Others
@@ -107,19 +107,15 @@ for c in cat_predictors:
     
     # now hot-one encode categorical variable
     lb = LabelEncoder()
-    ohe = OneHotEncoder(sparse=False)
     
     # training categorical attribute
     temp = lb.fit_transform(all_cat)
     temp = temp.reshape(-1,1)
-    temp = ohe.fit_transform(temp)
     
-    #generate column names for one-hot encoding
-    column_names = [all_cat.name + '.' + x for x in lb.classes_]
-    
+
     # split back out to training and test data sets
-    train_encoded_list.append(pd.DataFrame(temp[:training_rows],columns=column_names))
-    test_encoded_list.append(pd.DataFrame(temp[training_rows:],columns=column_names))
+    train_encoded_list.append(pd.DataFrame(temp[:training_rows],columns=[c]))
+    test_encoded_list.append(pd.DataFrame(temp[training_rows:],columns=[c]))
      
 
 # flatten out into single dataframe
