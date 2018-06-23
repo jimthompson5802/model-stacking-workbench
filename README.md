@@ -9,8 +9,8 @@ an overall prediction. Generally speaking the combination of predictions lead to
 a better performing model.
 
 This version of the workbench supports supports using model algorithms from scikit-learn and
-xgboost for regression and classification problems.  Future releases expand to 
-handle regression problems and incorporate algorithms from other Python packages, such as
+xgboost for regression and classification problems.  Future releases will 
+incorporate algorithms from other Python packages, such as
 TensorFlow, and R.
 
 See [project wiki](https://github.com/jimthompson5802/model-stacking-workbench/wiki) 
