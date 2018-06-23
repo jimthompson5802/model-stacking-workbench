@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #%%
 from framework.model_stacking import ModelTrainer, ModelPerformanceTracker
-from sklearn.ensemble import RandomForestClassifier as ThisModel
+from sklearn.ensemble import RandomForestRegressor as ThisModel
 
 #%%
 #
@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier as ThisModel
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(n_estimators=200,max_depth=5,n_jobs=-1), #hyper-parameters
+        model_params=dict(n_estimators=500,max_depth=5,n_jobs=-1), #hyper-parameters
         model_id='L1RF1',   # Model Identifier
         feature_set='L1FS01'  # feature set to use
         )
