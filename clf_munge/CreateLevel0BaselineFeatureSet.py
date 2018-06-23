@@ -7,7 +7,7 @@ import numpy as np
 
 from framework.model_stacking import FeatureGenerator, getConfigParameters
 from sklearn.preprocessing import Imputer
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import LabelEncoder
 
 #%%
 #
@@ -35,7 +35,7 @@ Baseline feature set
 
 Missing values: Median imputation
 
-One hot encoding of categorical variables
+Numeric encoding of categorical variables
 
 Categorical variables with moe than 100 levels are exclueded.
 Keep only top 10 levels, remaining are set as Others
@@ -68,7 +68,7 @@ cat_predictors = list(set(X_train.columns) - set(num_predictors))
 print('Number of numeric predictors: ',len(num_predictors),', Number of categorical predicators: ',len(cat_predictors))
 
 #%%
-# one-hot encode categorical predictors
+# encode categorical predictors
 train_encoded_list = []
 test_encoded_list = []
 
@@ -110,28 +110,28 @@ for c in cat_predictors:
     idx = [ isinstance(x,float) for x in all_cat]
     all_cat.loc[idx] = '__N/A__'
     
-    # now hot-one encode categorical variable
+    # now encode categorical variable
     lb = LabelEncoder()
-    ohe = OneHotEncoder(sparse=False)
     
     # training categorical attribute
     temp = lb.fit_transform(all_cat)
     temp = temp.reshape(-1,1)
-    temp = ohe.fit_transform(temp)
     
     #generate column names for one-hot encoding
-    column_names = [all_cat.name + '.' + x for x in lb.classes_]
+    #column_names = [all_cat.name + '.' + x for x in lb.classes_]
     
     # split back out to training and test data sets
-    train_encoded_list.append(pd.DataFrame(temp[:training_rows],columns=column_names))
-    test_encoded_list.append(pd.DataFrame(temp[training_rows:],columns=column_names))
+    train_encoded_list.append(pd.DataFrame(temp[:training_rows],columns=[c]))
+    test_encoded_list.append(pd.DataFrame(temp[training_rows:],columns=[c]))
      
 
+#%%
 # flatten out into single dataframe
 X_train_cat = pd.concat(train_encoded_list,axis=1)
 X_test_cat = pd.concat(test_encoded_list,axis=1)
 
 
+#%%
 # for numeric predictors use median for missing values
 X_train_num = X_train.loc[:,num_predictors]
 X_test_num = X_test.loc[:,num_predictors]
