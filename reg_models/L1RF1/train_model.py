@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #%%
 from framework.model_stacking import ModelTrainer, ModelPerformanceTracker
-from sklearn.neural_network import MLPRegressor as ThisModel
+from sklearn.ensemble import RandomForestClassifier as ThisModel
 
 #%%
 #
@@ -9,9 +9,9 @@ from sklearn.neural_network import MLPRegressor as ThisModel
 #
 this_model = ModelTrainer(
         ModelClass=ThisModel,  #Model algorithm
-        model_params=dict(hidden_layer_sizes=(15,),random_state=13), #hyper-parameters
-        model_id='L0NN1',   # Model Identifier
-        feature_set='KFS01'  # feature set to use
+        model_params=dict(n_estimators=200,max_depth=5,n_jobs=-1), #hyper-parameters
+        model_id='L1RF1',   # Model Identifier
+        feature_set='L1FS01'  # feature set to use
         )
 
 model_tracker = ModelPerformanceTracker(model_trainer=this_model)
@@ -43,5 +43,4 @@ this_model.createKaggleSubmission()
 #
 model_tracker.recordModelPerformance()
 
-#%%# -*- coding: utf-8 -*-
-
+#%%
