@@ -7,9 +7,14 @@ __pycache__
 *.csv.gz
 *.pkl
 clf_results
-clf_results
+reg_results
 .ipynb_checkpoints
 reports/illustrative_report
+
+# work area to try out code
 sandbox
+
+# output from jupyter notebooks when run in batch
+executed_*.ipynb
 
 # Allow
