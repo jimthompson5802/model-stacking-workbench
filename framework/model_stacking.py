@@ -441,6 +441,8 @@ class ModelTrainer():
             #
             # train model on complete training data set
             #
+            
+            print("test_prediction_method='all_data_model', building final model with all data")
     
             X_train = train_df[predictors]
             y_train = train_df[self.CONFIG['TARGET_VAR']]
@@ -487,6 +489,7 @@ class ModelTrainer():
         # if single model, then generate predictions for test data
         # if list then generate predictions for each model in list and average test data prediction
         if isinstance(model,(list)):
+            print('using k-fold_average_model predictions')
             pred_list = []
             for m in model:
                 if self.CONFIG['PROBLEM_TYPE'] == 'classification':
@@ -504,6 +507,7 @@ class ModelTrainer():
             predictions = pd.DataFrame(preds,index=test_df.index)
                 
         else:
+            print('using all_data_model predictions for test data set')
             if self.CONFIG['PROBLEM_TYPE'] == 'classification':
                 y_hat = model.predict_proba(test_df[predictors])
             elif self.CONFIG['PROBLEM_TYPE'] == 'regression':
