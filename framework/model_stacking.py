@@ -26,7 +26,9 @@ def getConfigParameters():
     
     try:
         file_name = os.environ['MSW_CONFIG_FILE']
+        print("retrieving config file from MSW_CONFIG_FILE environment variable")
     except KeyError:
+        print("Retrieving config.yml file from current working directory")
         file_name = 'config.yml'
          
     if not _loaded_config_file:
