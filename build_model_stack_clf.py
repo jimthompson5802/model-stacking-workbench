@@ -9,7 +9,7 @@ import os
 import os.path
 
 
-from framework.model_stacking import getConfigParameters
+from framework.model_stacking import getConfigParameters, runJupyterNotebook
 
 #%%
 #
@@ -43,6 +43,8 @@ exec(open(os.path.join(ROOT_DIR,MODELS_DIR,'L0LOG1','train_model.py')).read())
 exec(open(os.path.join(ROOT_DIR,MODELS_DIR,'L0NN1','train_model.py')).read())
 exec(open(os.path.join(ROOT_DIR,MODELS_DIR,'L0RF1','train_model.py')).read())
 exec(open(os.path.join(ROOT_DIR,MODELS_DIR,'L0XTC1','train_model.py')).read())
+runJupyterNotebook(directory=os.path.join(ROOT_DIR,MODELS_DIR,'L0RF2_NB'),
+                   notebook_name='train_model.ipynb')
 
 #%%
 #
