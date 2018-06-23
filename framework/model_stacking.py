@@ -10,19 +10,47 @@ import time
 import numpy as np
 
 #from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
-
 __version__ = '0.2.0'
+
+_loaded_config_file = False
+
+
+#
+# Common routine to extract configuration parameters
+# Sequence for finding configuration file
+#   1. Environment variable MSW_CONFIG_FILE
+#   2. 'config.yml' in current working directory
+#
+def getConfigParameters():
+    global _loaded_config_file
+    
+    try:
+        file_name = os.environ['MSW_CONFIG_FILE']
+    except KeyError:
+        file_name = 'config.yml'
+         
+    if not _loaded_config_file:
+        print('retrieving parameters from configuration file: {}'.format(file_name))
+        _loaded_config_file = True
+        
+    
+    with open(file_name,'r') as f:
+        CONFIG = yaml.load(f.read())
+        
+    return CONFIG
+
+
 
 #
 # locate user specified Kaggle competition specifiction fuctions
 #    calculateKaggleMetric: calculates contest metric from (y and y_hat)
 #    formatKaggleSubmission: creates Kaggle submission from test data set predicitons
 #
-with open('./config.yml') as f:
-    CONFIG = yaml.load(f.read())
-    kaggle_functions_file = CONFIG['KAGGLE_CONTEST_FUNCTIONS']
-    with open(os.path.join(CONFIG['ROOT_DIR'],kaggle_functions_file),'r') as g:
-        exec(g.read())
+
+CONFIG = getConfigParameters()
+kaggle_functions_file = CONFIG['KAGGLE_CONTEST_FUNCTIONS']
+with open(os.path.join(CONFIG['ROOT_DIR'],kaggle_functions_file),'r') as g:
+    exec(g.read())
 
 
 
@@ -75,8 +103,8 @@ class FeatureGenerator():
         #
         # get parameters 
         #
-        with open('./config.yml') as f:
-            self.CONFIG = yaml.load(f.read())
+        
+        self.CONFIG = getConfigParameters()
             
         self.root_dir = self.CONFIG['ROOT_DIR']
         self.data_dir = self.CONFIG['DATA_DIR']
@@ -239,8 +267,7 @@ class ModelTrainer():
         #
         # get global parameters 
         #
-        with open('./config.yml') as f:
-            self.CONFIG = yaml.load(f.read())
+        self.CONFIG = getConfigParameters()
             
         self.root_dir = self.CONFIG['ROOT_DIR']
         self.data_dir = self.CONFIG['DATA_DIR']
@@ -535,8 +562,7 @@ class ModelPerformanceTracker():
         #
         # get global parameters 
         #
-        with open('./config.yml') as f:
-            self.CONFIG = yaml.load(f.read())
+        self.CONFIG = getConfigParameters()
             
         self.tracking_file = os.path.join(self.CONFIG['ROOT_DIR'],CONFIG['RESULTS_DIR'],'model_performance_data.csv')
         

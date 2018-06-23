@@ -1,10 +1,9 @@
-from framework.model_stacking import FeatureGenerator
+from framework.model_stacking import FeatureGenerator, getConfigParameters
 from sklearn.preprocessing import MinMaxScaler, Imputer, LabelEncoder, OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 
 
 #%%
-import yaml
 import pandas as pd
 
 
@@ -13,8 +12,8 @@ import pandas as pd
 #
 # get parameters 
 #
-with open('./config.yml') as f:
-    CONFIG = yaml.load(f.read())
+
+CONFIG = getConfigParameters()
 
 #%%
 #

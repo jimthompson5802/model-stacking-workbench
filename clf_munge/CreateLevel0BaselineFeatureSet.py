@@ -5,7 +5,7 @@ import os.path
 import pandas as pd
 import numpy as np
 
-from framework.model_stacking import FeatureGenerator
+from framework.model_stacking import FeatureGenerator, getConfigParameters
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
@@ -13,8 +13,8 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 #
 # get parameters 
 #
-with open('./config.yml') as f:
-    CONFIG = yaml.load(f.read())
+
+CONFIG = getConfigParameters()
     
 
 # Keep at most this number of most number frequent unique factor levels

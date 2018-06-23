@@ -6,7 +6,6 @@ Created on Tue Jun 19 23:42:47 2018
 @author: jim
 """
 
-import yaml
 
 ##############################################################
 #                                                            #
@@ -36,8 +35,8 @@ def formatKaggleSubmission(predictions,model_id):
     #
     # get parameters 
     #
-    with open('./config.yml') as f:
-        CONFIG = yaml.load(f.read())
+    from framework.model_stacking import getConfigParameters
+    CONFIG = getConfigParameters()
     
     
     submission = predictions[CONFIG['ID_VAR']].join(predictions[model_id+'_1'])

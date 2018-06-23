@@ -7,16 +7,16 @@
 #%%
 import os
 import os.path
-import yaml
 import pandas as pd
 from sklearn.model_selection import KFold
 import pickle
+from framework.model_stacking import getConfigParameters
 #%%
 #
 # get parameters 
 #
-with open('./config.yml') as f:
-    CONFIG = yaml.load(f.read())
+
+CONFIG = getConfigParameters()
     
 print('root dir: ',CONFIG['ROOT_DIR'])
 

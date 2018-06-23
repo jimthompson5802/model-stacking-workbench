@@ -37,8 +37,8 @@ def formatKaggleSubmission(predictions,model_id):
     #
     # get parameters 
     #
-    with open('./config.yml') as f:
-        CONFIG = yaml.load(f.read())
+   
+    CONFIG = getConfigParameters()
     
     
     submission = predictions[CONFIG['ID_VAR']]\

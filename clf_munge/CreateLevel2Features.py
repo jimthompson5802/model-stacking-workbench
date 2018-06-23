@@ -1,5 +1,5 @@
 #%%
-from framework.model_stacking import FeatureGenerator
+from framework.model_stacking import FeatureGenerator, getConfigParameters
 
 #%%
 import yaml
@@ -12,8 +12,7 @@ import numpy as np
 #
 # get parameters 
 #
-with open('./config.yml') as f:
-    CONFIG = yaml.load(f.read())
+CONFIG = getConfigParameters()
     
 print('root dir: ',CONFIG['ROOT_DIR'])
 
@@ -32,12 +31,12 @@ class FeatureGeneratorNextLevel(FeatureGenerator):
         features = []
         for model_id in self.in_dir:
             train_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
-                                          'data',
+                                          self.CONFIG['DATA_DIR'],
                                           model_id,
                                           'train.csv.gz'))
 
             test_df = pd.read_csv(os.path.join(self.CONFIG['ROOT_DIR'],
-                                          'data',
+                                          self.CONFIG['DATA_DIR'],
                                           model_id,
                                           'test.csv.gz'))
              
