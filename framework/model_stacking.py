@@ -8,6 +8,7 @@ import pickle
 import datetime
 import time
 import numpy as np
+from sklearn.pipeline import Pipeline
 
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
@@ -425,9 +426,12 @@ class ModelTrainer():
             X_train = X_train.loc[:,predictors]
             y_train = train_df[self.CONFIG['TARGET_VAR']].iloc[train_idx]
             
-            model = self.ModelClass(**self.model_params)
-            
-            model.fit(X_train,y_train)
+            if isinstance(self.ModelClass,Pipeline):
+                model = self.ModelClass
+                model.set_params(**self.model_params).fit(X_train,y_train)
+            else:
+                model = self.ModelClass(**self.model_params)
+                model.fit(X_train,y_train)
             
             #generate feature for next level
             # get indices for hold out set
@@ -486,10 +490,12 @@ class ModelTrainer():
             self.training_rows = X_train.shape[0]
             self.training_columns = X_train.shape[1]
                 
-            model = self.ModelClass(**self.model_params)
-            
-
-            model.fit(X_train,y_train)
+            if isinstance(self.ModelClass,Pipeline):
+                model = self.ModelClass
+                model.set_params(**self.model_params).fit(X_train,y_train)
+            else:
+                model = self.ModelClass(**self.model_params)
+                model.fit(X_train,y_train)
 
             
             self._saveModelToDisk(model)
