@@ -24,7 +24,7 @@ this_model = ModelTrainer(
                           rf__n_jobs=-1,
                           rf__random_state=13), #hyper-parameters
         model_id='L0PCA_RF',   # Model Identifier
-        feature_set='KFS01'  # feature set to use
+        feature_set='KFSBSLN'  # feature set to use
         )
 
 model_tracker = ModelPerformanceTracker(model_trainer=this_model)
