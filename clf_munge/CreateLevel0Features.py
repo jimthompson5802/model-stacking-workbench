@@ -203,9 +203,23 @@ X_test_num = X_test.loc[:,num_predictors]
 imp = Imputer(strategy='median')
 mms = MinMaxScaler()
 
-X_train_num = pd.DataFrame(mms.fit_transform(imp.fit_transform(X_train_num)),columns=num_predictors)
+# flag missing values
+train_isnan = pd.DataFrame(X_train_num.isnull().astype('int'),index=X_train_num.index)
+train_isnan.columns = [c+'_isnan' for c in X_train_num.columns]
 
+# set up missing values in training data
+X_train_num = pd.DataFrame(mms.fit_transform(imp.fit_transform(X_train_num)),columns=num_predictors)
+X_train_num = pd.concat([X_train_num,train_isnan],axis=1)
+X_train_num = X_train_num[sorted(X_train_num.columns)]
+
+# flag missing values
+test_isnan = pd.DataFrame(X_test_num.isnull().astype('int'),index=X_test_num.index)
+test_isnan.columns = [c+'_isnan' for c in X_test_num.columns]
+
+# wetup missing values in test data
 X_test_num = pd.DataFrame(mms.transform(imp.transform(X_test_num)),columns=num_predictors)
+X_test_num = pd.concat([X_test_num,test_isnan],axis=1)
+X_test_num = X_test_num[sorted(X_test_num.columns)]
 
 
 # combine numeric and categorical attributes back to new training and test data set
@@ -333,10 +347,23 @@ X_test_num = X_test.loc[:,num_predictors]
 imp = Imputer(strategy='median')
 ss = StandardScaler()
 
-X_train_num = pd.DataFrame(ss.fit_transform(imp.fit_transform(X_train_num)),columns=num_predictors)
+# flag missing values
+train_isnan = pd.DataFrame(X_train_num.isnull().astype('int'),index=X_train_num.index)
+train_isnan.columns = [c+'_isnan' for c in X_train_num.columns]
 
-X_test_num = pd.DataFrame(ss.transform(imp.transform(X_test_num)),columns=num_predictors)
+# set up missing values in training data
+X_train_num = pd.DataFrame(mms.fit_transform(imp.fit_transform(X_train_num)),columns=num_predictors)
+X_train_num = pd.concat([X_train_num,train_isnan],axis=1)
+X_train_num = X_train_num[sorted(X_train_num.columns)]
 
+# flag missing values
+test_isnan = pd.DataFrame(X_test_num.isnull().astype('int'),index=X_test_num.index)
+test_isnan.columns = [c+'_isnan' for c in X_test_num.columns]
+
+# wetup missing values in test data
+X_test_num = pd.DataFrame(mms.transform(imp.transform(X_test_num)),columns=num_predictors)
+X_test_num = pd.concat([X_test_num,test_isnan],axis=1)
+X_test_num = X_test_num[sorted(X_test_num.columns)]
 
 # combine numeric and categorical attributes back to new training and test data set
 X_train_new = pd.concat([X_train_num,X_train_cat],axis=1)
