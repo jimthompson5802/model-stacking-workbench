@@ -9,6 +9,7 @@ import datetime
 import time
 import numpy as np
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import KFold
 
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
@@ -266,6 +267,7 @@ class ModelTrainer():
                  model_id=None,    # model identifier
                  test_prediction_method=None, #training method
                  feature_set=None,  # feature set to use
+                 k_fold_random_state = None,  # random seed to start k-fold splitting
                  train_ds='train.csv.gz',  # feature set training data set
                  test_ds='test.csv.gz',  # feature set test data set
                  compress_output=True  # compress genrated output
@@ -303,6 +305,12 @@ class ModelTrainer():
         self.root_dir = self.CONFIG['ROOT_DIR']
         self.data_dir = self.CONFIG['DATA_DIR']
         self.model_dir = self.CONFIG['MODEL_DIR']
+        
+        if k_fold_random_state == None:
+            self.k_fold_random_state = self.CONFIG['K_FOLD_RANDOM_STATE']
+        else:
+            self.k_fold_random_state = k_fold_random_state 
+            
         
         if self.test_prediction_method == None:
             self.test_prediction_method = self.CONFIG['TEST_PREDICTION_METHOD']
@@ -389,17 +397,7 @@ class ModelTrainer():
         print('Starting model training: {:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now()))
         start_training = time.time()
         
-        #
-        # retrieve KFold specifiction
-        #
-        with open(os.path.join(self.root_dir,self.data_dir,'k-fold_specification.pkl'),'rb') as f:
-            k_folds = pickle.load(f)
-            
-         
-        #
-        # generate features for next level
-        #
-        
+ 
         # retrieve training data
         train_df = pd.read_csv(os.path.join(self.root_dir,self.data_dir,
                                             self.feature_set,self.train_ds))
@@ -407,8 +405,12 @@ class ModelTrainer():
         predictors = sorted(list(set(train_df.columns) - 
                                  set(self.CONFIG['ID_VAR']) - set([self.CONFIG['TARGET_VAR']])))
         
-
-        
+        # Create the K-Fold specifications for the training data
+        k_folds = []
+        kf = KFold(n_splits=5,shuffle=True,random_state=self.k_fold_random_state)
+        for train_index, holdout_index in kf.split(train_df):
+            k_folds.append((train_index,holdout_index))
+            
         
         #
         # create features for next level using the hold out set
@@ -619,8 +621,9 @@ class ModelPerformanceTracker():
                                ):
         # retrieve basic model information from model trainer
         model_params = "{'model_params': " + str(self.model_trainer.model_params) \
-                + ", 'test_prediction_method': '" + self.model_trainer.test_prediction_method \
-                + "'}"
+                + ", 'test_prediction_method': '" + self.model_trainer.test_prediction_method + "'"\
+                + ", 'k_fold_random_state': {:d}".format(self.model_trainer.k_fold_random_state)\
+                + "}"
         
         model_id = self.model_trainer.model_id
         feature_set = self.model_trainer.feature_set

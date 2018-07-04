@@ -62,3 +62,9 @@ KAGGLE_SUBMISSION_HEADERS: ['ID','PredictedProb']
 #
 TEST_PREDICTION_METHOD: k-fold_average_model
 
+#
+# k-fold splitting random state specification
+#
+K_FOLD_RANDOM_STATE: 13
+
+
