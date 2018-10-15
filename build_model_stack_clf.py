@@ -26,7 +26,7 @@ MODELS_DIR = CONFIG['MODEL_DIR']
 #
 # Create k-fold specification for training
 #
-exec(open(os.path.join(ROOT_DIR,MUNGE_DIR,'createCVFolds.py')).read())
+#exec(open(os.path.join(ROOT_DIR,MUNGE_DIR,'createCVFolds.py')).read())
 
 #%%
 #
