@@ -8,6 +8,7 @@ __pycache__
 results
 .ipynb_checkpoints
 reports/illustrative_report
+build
 
 # work area to try out code
 sandbox

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+##
+# build the model stacking package for distribution
+#
+python setup.py sdist bdist_wheel
