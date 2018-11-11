@@ -1,4 +1,4 @@
-from framework.model_stacking import FeatureGenerator, getConfigParameters
+from msw.model_stacking import FeatureGenerator, getConfigParameters
 from sklearn.preprocessing import MinMaxScaler, Imputer, LabelEncoder, OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 

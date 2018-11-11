@@ -1,5 +1,5 @@
 #%%
-from framework.model_stacking import FeatureGenerator, getConfigParameters
+from msw.model_stacking import FeatureGenerator, getConfigParameters
 
 #%%
 

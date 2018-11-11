@@ -5,7 +5,7 @@ import os.path
 import pandas as pd
 import numpy as np
 
-from framework.model_stacking import FeatureGenerator, getConfigParameters
+from msw.model_stacking import FeatureGenerator, getConfigParameters
 from sklearn.preprocessing import Imputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, MinMaxScaler
 
