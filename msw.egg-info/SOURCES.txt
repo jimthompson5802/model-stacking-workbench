@@ -1,0 +1,10 @@
+README.md
+setup.py
+msw/__init__.py
+msw/model_blender.py
+msw/model_stacking.py
+msw.egg-info/PKG-INFO
+msw.egg-info/SOURCES.txt
+msw.egg-info/dependency_links.txt
+msw.egg-info/requires.txt
+msw.egg-info/top_level.txt
