@@ -35,7 +35,7 @@ def formatKaggleSubmission(predictions,model_id):
     #
     # get parameters 
     #
-    from framework.model_stacking import getConfigParameters
+    from msw.model_stacking import getConfigParameters
     CONFIG = getConfigParameters()
     
     

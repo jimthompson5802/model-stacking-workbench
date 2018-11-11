@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #%%
-from framework.model_stacking import ModelTrainer, ModelPerformanceTracker
+from msw.model_stacking import ModelTrainer, ModelPerformanceTracker
 from sklearn.neural_network import MLPClassifier as ThisModel
 
 #%%

@@ -9,7 +9,7 @@ import os
 import os.path
 
 
-from framework.model_stacking import getConfigParameters, runJupyterNotebook
+from msw.model_stacking import getConfigParameters, runJupyterNotebook
 
 #%%
 #
@@ -22,11 +22,6 @@ CONFIG = getConfigParameters()
 ROOT_DIR = CONFIG['ROOT_DIR']
 MUNGE_DIR = CONFIG['MUNGE_DIR']
 MODELS_DIR = CONFIG['MODEL_DIR']
-#%%
-#
-# Create k-fold specification for training
-#
-#exec(open(os.path.join(ROOT_DIR,MUNGE_DIR,'createCVFolds.py')).read())
 
 #%%
 #
