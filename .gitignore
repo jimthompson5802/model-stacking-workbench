@@ -1,5 +1,6 @@
 # Ignore
 .spyproject
+.idea
 data
 __pycache__
 *.csv
