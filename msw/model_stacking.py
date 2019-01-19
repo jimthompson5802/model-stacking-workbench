@@ -15,7 +15,7 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 
 #from kaggle_user_functions import calculateKaggleMetric, formatKaggleSubmission
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 
 _loaded_config_file = False
 
